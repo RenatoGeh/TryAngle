@@ -11,6 +11,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <vector>
+#include <memory>
 #include <algorithm>
 #include "Vector2D.hpp"
 
@@ -40,7 +41,7 @@ class Entity : public sf::Drawable, public sf::Transformable {
 	public:
 		static void add(Entity*);
 		static void remove(Entity*);
-		static void add(sf::Drawable*);
+		static void add(sf::Drawable*, bool);
 		static void remove(sf::Drawable*, bool);
 		static void clear(void);
 	public:
@@ -95,6 +96,7 @@ void Entity::destroy() {this->active = false;}
 
 void Entity::add(Entity* e) {
 	e->active = true;
+
 	Entity::entities.push_back(e);
 	Entity::paintables.push_back(e);
 }
@@ -104,13 +106,13 @@ void Entity::remove(Entity* e) {
 	for(std::vector<Entity*>::iterator it = Entity::entities.begin();
 			it!=Entity::entities.end();++it)
 		if(*it==e) {
-			Entity::remove(dynamic_cast<sf::Drawable*>(*it), false);
+			Entity::remove(*it, false);
 			break;
 		}
 	delete e;
 }
 
-void Entity::add(sf::Drawable* e) {
+void Entity::add(sf::Drawable* e, bool diff=true) {
 	Entity::paintables.push_back(e);
 }
 
@@ -154,7 +156,7 @@ namespace EntityUtility {
 	bool notActive(Entity* e) {
 		bool flag = !e->isActive();
 		if(flag) {
-			Entity::remove(dynamic_cast<sf::Drawable*>(e), false);
+			Entity::remove(e, false);
 			delete e;
 		}
 		return flag;
@@ -167,9 +169,17 @@ void Entity::onUpdate() {
 		if((*it)->active)
 			(*it)->update();
 
-	Entity::entities.erase(std::remove_if(
+	for(std::vector<Entity*>::iterator it = Entity::entities.begin();
+			it!=Entity::entities.end();)
+		if(!(*it)->active) {
+			Entity::remove(*it, false);
+			delete *it;
+			it = Entity::entities.erase(it);
+		} else ++it;
+
+	/*Entity::entities.erase(std::remove_if(
 		Entity::entities.begin(), Entity::entities.end(),
-		EntityUtility::notActive), Entity::entities.end());
+		EntityUtility::notActive), Entity::entities.end());*/
 }
 
 bool Entity::isActive() {return active;}
@@ -189,6 +199,7 @@ void Entity::setColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
 
 void Entity::update() {
 	position->add(speed);
+	this->setPosition(position->x, position->y);
 	this->setRotation(-180*angle/math::PI);
 }
 

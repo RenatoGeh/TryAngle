@@ -14,9 +14,6 @@
 #include "Vector2D.hpp"
 
 class Projectile : public Entity {
-	private:
-		bool team;
-		bool outOfBounds;
 	protected:
 		sf::CircleShape* shape;
 	public:
@@ -25,18 +22,15 @@ class Projectile : public Entity {
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(void);
-	public:
-		void destroy(void);
 };
 
-Projectile::Projectile(Entity* parent, double x, double y, double vx, double vy, double r=10) :
+Projectile::Projectile(Entity* parent, double x, double y, double vx, double vy, double r=2) :
 		Entity("Projectile", x+1, y+1, 2*r, 2*r, vx, vy) {
 	this->shape = new sf::CircleShape(r);
-	this->color = parent->color;
-	this->team = parent->team;
-	this->outOfBounds = false;
+	this->color = parent->getColor();
+	this->team = parent->getTeam();
 
-	this->shape->setPointCount(10);
+	this->shape->setPointCount(4);
 	this->shape->setFillColor(*color);
 
 	this->setOrigin(0, 0);
@@ -56,16 +50,15 @@ void Projectile::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 void Projectile::update() {
 	Entity::update();
 
-	if(!outOfBounds)
-		if(position->x < 0 || position->x > Settings::Width ||
-				position->y < 0 || position->y > Settings::Height) {
-			this->destroy();
-			return;
-		}
+	if(position->x < 0 || position->x > Settings::Width ||
+			position->y < 0 || position->y > Settings::Height) {
+		this->destroy();
+		return;
+	}
 
 	std::vector<Entity*>* entities = Entity::getEntities();
 	for(auto it = entities->begin(); it!=entities->end(); ++it)
-		if((*it)->team != this->team)
+		if((*it)->getTeam() != this->team)
 			if((*it)->intersects(this)) {
 				(*it)->destroy();
 				this->destroy();

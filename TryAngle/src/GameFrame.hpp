@@ -67,6 +67,7 @@ bool GameFrame::onInit() {
 
 	this->player = new Player("Francis J. Underwood",
 			Settings::Width/2-30, Settings::Height/2-30, 30);
+
 	Entity::add(this->player);
 
 	this->debug = new sf::Text();

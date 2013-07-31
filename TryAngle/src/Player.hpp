@@ -14,6 +14,7 @@
 #include <cmath>
 #include "Entity.hpp"
 #include "Vector2D.hpp"
+#include "Projectile.hpp"
 
 class Player : public Entity {
 	protected:
@@ -61,12 +62,10 @@ void Player::update() {
 	if(position->y < 0 || position->y + size->y > Settings::Height)
 		speed->y = 0;
 
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		this->angle += 2;
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 		this->angle -= 2;
-
-	this->setPosition(position->x, position->y);
 }
 
 void Player::lookAt(double x, double y) {
@@ -74,7 +73,16 @@ void Player::lookAt(double x, double y) {
 }
 
 void Player::shoot() {
+	double alpha, theta = math::PI-(this->getRotation()*math::PI/180);
+	double r = this->size->x/2;
 
+	for(short int i=0;i<3;i++) {
+		alpha = theta + i*(2*math::PI/3);
+		Entity::add(new Projectile(this,
+				position->x + r*sin(alpha),
+				position->y + r*cos(alpha),
+				sin(alpha)*5, cos(alpha)*5));
+	}
 }
 
 bool Player::onEvent(sf::Event& event) {
@@ -97,9 +105,6 @@ bool Player::onEvent(sf::Event& event) {
 					if(position->x + size->x < Settings::Width)
 						this->speed->x = 2.5;
 				break;
-				case sf::Keyboard::Space:
-					this->shoot();
-				break;
 				default:
 					return true;
 				break;
@@ -118,6 +123,9 @@ bool Player::onEvent(sf::Event& event) {
 				break;
 				case sf::Keyboard::D:
 					this->speed->x = 0;
+				break;
+				case sf::Keyboard::Space:
+					this->shoot();
 				break;
 				default:
 					return true;
