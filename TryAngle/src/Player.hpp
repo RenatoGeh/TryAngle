@@ -66,6 +66,18 @@ void Player::update() {
 		this->angle += 2;
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 		this->angle -= 2;
+
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		this->speed->y = -2.5;
+	else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		this->speed->y = 2.5;
+	else this->speed->y = 0;
+
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		this->speed->x = -2.5;
+	else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		this->speed->x = 2.5;
+	else this->speed->x = 0;
 }
 
 void Player::lookAt(double x, double y) {
@@ -88,49 +100,10 @@ void Player::shoot() {
 bool Player::onEvent(sf::Event& event) {
 	switch(event.type) {
 		case sf::Event::KeyPressed:
-			switch(event.key.code) {
-				case sf::Keyboard::W:
-					if(position->y > 0)
-						this->speed->y = -2.5;
-				break;
-				case sf::Keyboard::S:
-					if(position->y + size->y < Settings::Height)
-						this->speed->y = 2.5;
-				break;
-				case sf::Keyboard::A:
-					if(position->x > 0)
-						this->speed->x = -2.5;
-				break;
-				case sf::Keyboard::D:
-					if(position->x + size->x < Settings::Width)
-						this->speed->x = 2.5;
-				break;
-				default:
-					return true;
-				break;
-			}
 		break;
 		case sf::Event::KeyReleased:
-			switch(event.key.code) {
-				case sf::Keyboard::W:
-					this->speed->y = 0;
-				break;
-				case sf::Keyboard::S:
-					this->speed->y = 0;
-				break;
-				case sf::Keyboard::A:
-					this->speed->x = 0;
-				break;
-				case sf::Keyboard::D:
-					this->speed->x = 0;
-				break;
-				case sf::Keyboard::Space:
-					this->shoot();
-				break;
-				default:
-					return true;
-				break;
-			}
+			if(event.key.code == sf::Keyboard::Space)
+				this->shoot();
 		break;
 		default:
 			return false;

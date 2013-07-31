@@ -27,7 +27,7 @@ class Projectile : public Entity {
 Projectile::Projectile(Entity* parent, double x, double y, double vx, double vy, double r=2) :
 		Entity("Projectile", x+1, y+1, 2*r, 2*r, vx, vy) {
 	this->shape = new sf::CircleShape(r);
-	this->color = parent->getColor();
+	this->color = new sf::Color(*(parent->getColor()));
 	this->team = parent->getTeam();
 
 	this->shape->setPointCount(4);

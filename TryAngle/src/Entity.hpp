@@ -17,6 +17,7 @@
 
 namespace math {
 	const long double PI = 3.14159265358979323846;
+	template <typename T> short int signum(T e) {return e>0?1:e<0?-1:0;}
 }
 
 class Entity : public sf::Drawable, public sf::Transformable {
