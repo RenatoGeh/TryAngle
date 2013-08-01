@@ -13,6 +13,7 @@
 #include <sstream>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include "Utility.hpp"
 #include "Vector2D.hpp"
 #include "Player.hpp"
 
@@ -113,7 +114,7 @@ void GameFrame::onEvent() {
 }
 
 void GameFrame::onRender() {
-	window->clear(sf::Color::Black);
+	window->clear(Utility::Color::nextColor());
 
 	//TODO: Rendering
 	Entity::paint(window);
