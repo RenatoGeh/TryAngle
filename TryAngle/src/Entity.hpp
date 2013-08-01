@@ -20,6 +20,28 @@ namespace math {
 	template <typename T> short int signum(T e) {return e>0?1:e<0?-1:0;}
 }
 
+namespace Utility {
+	namespace Random {
+		#include <random>
+		#include <climits>
+
+		std::default_random_engine gen;
+
+		sf::Color getRandomColor(void);
+		unsigned long int getRandom(unsigned long int,
+				unsigned long int);
+
+		sf::Color getRandomColor() {
+			return sf::Color(gen()%256, gen()%256, gen()%256);
+		}
+
+		unsigned long int getRandom(unsigned long int min=0,
+				unsigned long int max = gen.max()) {
+			return (min + gen()) % max;
+		}
+	}
+}
+
 class Entity : public sf::Drawable, public sf::Transformable {
 	protected:
 		static std::vector<Entity*> entities;
@@ -49,7 +71,7 @@ class Entity : public sf::Drawable, public sf::Transformable {
 		static std::vector<sf::Drawable*>* getPaintables(void);
 		static std::vector<Entity*>* getEntities(void);
 		static void paint(sf::RenderWindow*);
-		static void onUpdate(void);
+		static void onUpdate(sf::Time);
 	public:
 		virtual void destroy(void);
 	public:
@@ -65,7 +87,7 @@ class Entity : public sf::Drawable, public sf::Transformable {
 		void setColor(sf::Uint8, sf::Uint8, sf::Uint8);
 		void setTeam(bool);
 	public:
-		virtual void update(void);
+		virtual void update(sf::Time);
 		virtual bool intersects(Entity*);
 };
 
@@ -164,23 +186,23 @@ namespace EntityUtility {
 	}
 }
 
-void Entity::onUpdate() {
+void Entity::onUpdate(sf::Time dt) {
 	for(std::vector<Entity*>::iterator it = Entity::entities.begin();
 			it!=Entity::entities.end();++it)
 		if((*it)->active)
-			(*it)->update();
+			(*it)->update(dt);
 
-	for(std::vector<Entity*>::iterator it = Entity::entities.begin();
+	/*for(std::vector<Entity*>::iterator it = Entity::entities.begin();
 			it!=Entity::entities.end();)
 		if(!(*it)->active) {
 			Entity::remove(*it, false);
 			delete *it;
 			it = Entity::entities.erase(it);
-		} else ++it;
+		} else ++it;*/
 
-	/*Entity::entities.erase(std::remove_if(
+	Entity::entities.erase(std::remove_if(
 		Entity::entities.begin(), Entity::entities.end(),
-		EntityUtility::notActive), Entity::entities.end());*/
+		EntityUtility::notActive), Entity::entities.end());
 }
 
 bool Entity::isActive() {return active;}
@@ -198,7 +220,7 @@ void Entity::setColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
 	color = new sf::Color(r, g, b);
 }
 
-void Entity::update() {
+void Entity::update(sf::Time dt) {
 	position->add(speed);
 	this->setPosition(position->x, position->y);
 	this->setRotation(-180*angle/math::PI);

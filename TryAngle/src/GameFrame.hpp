@@ -22,6 +22,7 @@ class GameFrame {
 
 		sf::RenderWindow* window;
 		sf::Font font;
+		sf::Clock* thread;
 
 		std::ostringstream convert_stream;
 	private:
@@ -35,7 +36,7 @@ class GameFrame {
 		int onExecute(void);
 		void onEvent(void);
 		void onRender(void);
-		void onUpdate(void);
+		void onUpdate(sf::Time);
 		int onCleanup(void);
 	public:
 		template <typename T> std::string toString(T);
@@ -45,6 +46,7 @@ GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short
 	this->title = title;
 	this->window = new sf::RenderWindow(sf::VideoMode(width, height),
 			this->title, sf::Style::Close, sf::ContextSettings(0, 0, 8));
+	this->thread = new sf::Clock();
 
 	this->window->setVerticalSyncEnabled(true);
 
@@ -84,9 +86,10 @@ int GameFrame::onExecute() {
 	if(!this->onInit())
 		return -1;
 
+	this->thread->restart();
 	while(window->isOpen()) {
 		this->onEvent();
-		this->onUpdate();
+		this->onUpdate(this->thread->restart());
 		this->onRender();
 	}
 
@@ -118,9 +121,9 @@ void GameFrame::onRender() {
 	window->display();
 }
 
-void GameFrame::onUpdate() {
+void GameFrame::onUpdate(sf::Time dt) {
 	//TODO: Updating
-	Entity::onUpdate();
+	Entity::onUpdate(dt);
 
 	debug->setString("Player's position: [" + toString(player->getPosition().x)
 			+ ", " + toString(player->getPosition().y) + "]"

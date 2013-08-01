@@ -12,6 +12,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include "Vector2D.hpp"
+#include "Entity.hpp"
 
 class Projectile : public Entity {
 	protected:
@@ -21,13 +22,13 @@ class Projectile : public Entity {
 		~Projectile(void);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
-		void update(void);
+		void update(sf::Time);
 };
 
 Projectile::Projectile(Entity* parent, double x, double y, double vx, double vy, double r=2) :
 		Entity("Projectile", x+1, y+1, 2*r, 2*r, vx, vy) {
 	this->shape = new sf::CircleShape(r);
-	this->color = new sf::Color(*(parent->getColor()));
+	this->color = new sf::Color(Utility::Random::getRandomColor());
 	this->team = parent->getTeam();
 
 	this->shape->setPointCount(4);
@@ -47,8 +48,8 @@ void Projectile::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(*shape, states);
 }
 
-void Projectile::update() {
-	Entity::update();
+void Projectile::update(sf::Time dt) {
+	Entity::update(dt);
 
 	if(position->x < 0 || position->x > Settings::Width ||
 			position->y < 0 || position->y > Settings::Height) {

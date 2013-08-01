@@ -13,18 +13,7 @@
 #include "Entity.hpp"
 #include "Player.hpp"
 #include "Vector2D.hpp"
-
-namespace Utility {
-	#include <random>
-
-	std::random_device gen;
-
-	sf::Color getRandomColor(void);
-
-	sf::Color getRandomColor() {
-		return sf::Color(gen()%256, gen()%256, gen()%256);
-	}
-}
+#include "Timer.hpp"
 
 class Enemy : public Entity {
 	private:
@@ -32,18 +21,19 @@ class Enemy : public Entity {
 	protected:
 		sf::CircleShape* shape;
 	public:
-		Enemy(double, double, double);
+		Enemy(double, double, double, double, double);
 		~Enemy(void);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
-		void update(void);
+		void update(sf::Time dt);
 	public:
 		void destroy(void);
 };
 
-Enemy::Enemy(double x, double y, double r) : Entity("Enemy", x, y, 2*r, 2*r) {
+Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
+		Entity("Enemy", x, y, 2*r, 2*r, vx, vy){
 	this->shape = new sf::CircleShape(r);
-	this->color = Utility::getRandomColor();
+	this->color = Utility::Random::getRandomColor();
 	this->wasInside = false;
 
 	this->shape->setPointCount(3);
@@ -63,8 +53,8 @@ void Enemy::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(*shape, states);
 }
 
-void Enemy::update() {
-	Entity::update();
+void Enemy::update(sf::Time dt) {
+	Entity::update(dt);
 
 	if(!wasInside)
 		if(position->x > 0 && position->x < Settings::Width &&

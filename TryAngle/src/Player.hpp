@@ -24,7 +24,7 @@ class Player : public Entity {
 		~Player(void);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
-		void update(void);
+		void update(sf::Time);
 		bool onEvent(sf::Event&);
 	public:
 		void lookAt(double, double);
@@ -54,8 +54,8 @@ void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(*shape, states);
 }
 
-void Player::update() {
-	Entity::update();
+void Player::update(sf::Time dt) {
+	Entity::update(dt);
 
 	if(position->x < 0 || position->x + size->x > Settings::Width)
 		speed->x = 0;
