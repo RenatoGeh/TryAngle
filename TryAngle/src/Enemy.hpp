@@ -18,22 +18,23 @@
 class Enemy : public Entity {
 	private:
 		bool wasInside;
+		math::byte clockwise;
 	protected:
 		sf::CircleShape* shape;
+	private:
+		Timer* shooter;
 	public:
 		Enemy(double, double, double, double, double);
 		~Enemy(void);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(sf::Time dt);
-	public:
-		void destroy(void);
 };
 
 Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 		Entity("Enemy", x, y, 2*r, 2*r, vx, vy){
 	this->shape = new sf::CircleShape(r);
-	this->color = Utility::Random::getRandomColor();
+	this->color = new sf::Color(Utility::Random::getRandomColor());
 	this->wasInside = false;
 
 	this->shape->setPointCount(3);
@@ -42,6 +43,11 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 	this->setOrigin(0, 0);
 	this->setPosition(position->x, position->y);
 	this->setOrigin(r, r);
+
+	this->clockwise = Utility::Random::getRandomSign(false);
+
+	this->shooter = new Timer(sf::seconds, 1.5f, true, 0.0f,
+			&Enemy::shoot, true);
 }
 
 Enemy::~Enemy() {
@@ -55,6 +61,8 @@ void Enemy::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 void Enemy::update(sf::Time dt) {
 	Entity::update(dt);
+
+	this->rotate(this->clockwise);
 
 	if(!wasInside)
 		if(position->x > 0 && position->x < Settings::Width &&

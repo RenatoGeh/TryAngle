@@ -11,7 +11,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <string>
-#include <cmath>
 #include "Entity.hpp"
 #include "Vector2D.hpp"
 #include "Projectile.hpp"
@@ -26,9 +25,6 @@ class Player : public Entity {
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(sf::Time);
 		bool onEvent(sf::Event&);
-	public:
-		void lookAt(double, double);
-		void shoot(void);
 };
 
 Player::Player(std::string name, double x, double y, double r) :
@@ -78,23 +74,6 @@ void Player::update(sf::Time dt) {
 	else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		this->speed->x = 2.5;
 	else this->speed->x = 0;
-}
-
-void Player::lookAt(double x, double y) {
-	this->angle = atan2(position->x-x, position->y-y);
-}
-
-void Player::shoot() {
-	double alpha, theta = math::PI-(this->getRotation()*math::PI/180);
-	double r = this->size->x/2;
-
-	for(short int i=0;i<3;i++) {
-		alpha = theta + i*(2*math::PI/3);
-		Entity::add(new Projectile(this,
-				position->x + r*sin(alpha),
-				position->y + r*cos(alpha),
-				sin(alpha)*5, cos(alpha)*5));
-	}
 }
 
 bool Player::onEvent(sf::Event& event) {

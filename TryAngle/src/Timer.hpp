@@ -22,9 +22,9 @@ class Timer {
 
 		void (*action)(void);
 	public:
-		template <typename T>
-			Timer(sf::Time (*)(T), double, bool, double,
-					void (*)(void), bool);
+		template <typename T, class C>
+			Timer(sf::Time (*)(T), T, bool, T,
+					void (C::*)(void), bool);
 	public:
 		void update(sf::Time);
 		bool isActive(void);
@@ -38,15 +38,15 @@ class Timer {
 
 std::vector<Timer*> Timer::timers;
 
-template <typename T>
-	Timer::Timer(sf::Time (*format)(T e), double dt,
-			bool repeats=true, double time,	void (*f)(void), bool active) {
+template <typename T, class C>
+	Timer::Timer(sf::Time (*format)(T e), T dt, bool repeats=true,
+			T time = 0, void (C::* f)(void) = NULL, bool active=false) {
 
 	this->dt = format(dt);
 	this->repeats = repeats;
 	this->time = format(time);
 	this->active = active;
-	this->action = f;
+	//this->action = f;
 
 	if(active)
 		Timer::add(this);
@@ -64,7 +64,8 @@ void Timer::update(sf::Time dt) {
 	if(!this->repeats)
 		this->active = false;
 
-	this->action();
+	if(this->action != NULL)
+		this->action();
 }
 
 bool Timer::isActive() {return this->active;}
@@ -77,6 +78,13 @@ void Timer::remove(Timer* timer) {
 			Timer::timers.erase(it);
 			break;
 		}
+}
+
+void Timer::clear() {
+	while(!Timer::timers.empty()) {
+		delete Timer::timers.back();
+		Timer::timers.pop_back();
+	}
 }
 
 namespace TimerUtility {

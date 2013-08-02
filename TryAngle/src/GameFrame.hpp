@@ -16,6 +16,7 @@
 #include "Utility.hpp"
 #include "Vector2D.hpp"
 #include "Player.hpp"
+#include "Enemy.hpp"
 
 class GameFrame {
 	private:
@@ -105,7 +106,11 @@ void GameFrame::onEvent() {
 			window->close();
 			break;
 		} else {
-			if(event.type == sf::Event::MouseMoved)
+			if(event.type == sf::Event::MouseButtonReleased) {
+				if(event.mouseButton.button == sf::Mouse::Middle)
+					Entity::add(new Enemy((double)event.mouseButton.x,
+							(double)event.mouseButton.y));
+			} else if(event.type == sf::Event::MouseMoved)
 				Settings::mouse_position->set(
 						event.mouseMove.x, event.mouseMove.y);
 			this->player->onEvent(event);
@@ -125,6 +130,7 @@ void GameFrame::onRender() {
 void GameFrame::onUpdate(sf::Time dt) {
 	//TODO: Updating
 	Entity::onUpdate(dt);
+	Timer::onUpdate(dt);
 
 	debug->setString("Player's position: [" + toString(player->getPosition().x)
 			+ ", " + toString(player->getPosition().y) + "]"
@@ -137,6 +143,7 @@ void GameFrame::onUpdate(sf::Time dt) {
 int GameFrame::onCleanup() {
 	try {
 		Entity::clear();
+		Timer::clear();
 	} catch(...) {
 		std::cerr << "Cleanup gone wrong. That's bad yo." << std::endl;
 		return EXIT_FAILURE;

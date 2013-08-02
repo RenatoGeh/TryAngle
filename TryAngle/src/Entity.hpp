@@ -10,6 +10,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include <cmath>
 #include <vector>
 #include <memory>
 #include <algorithm>
@@ -62,6 +63,8 @@ class Entity : public sf::Drawable, public sf::Transformable {
 	public:
 		virtual void update(sf::Time);
 		virtual bool intersects(Entity*);
+		virtual void shoot(void);
+		virtual void lookAt(double, double);
 };
 
 std::vector<Entity*> Entity::entities;
@@ -125,12 +128,12 @@ void Entity::remove(sf::Drawable* e, bool deletion=true) {
 
 void Entity::clear() {
 	while(!Entity::entities.empty()) {
-		delete entities.back();
-		entities.pop_back();
+		delete Entity::entities.back();
+		Entity::entities.pop_back();
 	}
 	while(!Entity::paintables.empty()) {
-		delete paintables.back();
-		paintables.pop_back();
+		delete Entity::paintables.back();
+		Entity::paintables.pop_back();
 	}
 }
 
@@ -165,14 +168,6 @@ void Entity::onUpdate(sf::Time dt) {
 		if((*it)->active)
 			(*it)->update(dt);
 
-	/*for(std::vector<Entity*>::iterator it = Entity::entities.begin();
-			it!=Entity::entities.end();)
-		if(!(*it)->active) {
-			Entity::remove(*it, false);
-			delete *it;
-			it = Entity::entities.erase(it);
-		} else ++it;*/
-
 	Entity::entities.erase(std::remove_if(
 		Entity::entities.begin(), Entity::entities.end(),
 		EntityUtility::notActive), Entity::entities.end());
@@ -204,6 +199,25 @@ bool Entity::intersects(Entity* e) {
 			position->x + size->x > e->position->x &&
 			position->y < e->position->y + e->size->y &&
 			position->y + size->y > e->position->y);
+}
+
+void Entity::lookAt(double x, double y) {
+	this->angle = atan2(position->x-x, position->y-y);
+}
+
+#include "Projectile.hpp"
+
+void Entity::shoot(void) {
+	double alpha, theta = math::PI-(this->getRotation()*math::PI/180);
+	double r = this->size->x/2;
+
+	for(short int i=0;i<3;i++) {
+		alpha = theta + i*(2*math::PI/3);
+		Entity::add(new Projectile(this,
+				position->x + r*sin(alpha),
+				position->y + r*cos(alpha),
+				sin(alpha)*5, cos(alpha)*5));
+	}
 }
 
 #endif
