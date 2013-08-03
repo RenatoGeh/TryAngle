@@ -22,7 +22,7 @@ class Enemy : public Entity {
 	protected:
 		sf::CircleShape* shape;
 	private:
-		Timer* shooter;
+		ActionTimer<void(void)>* shooter;
 	public:
 		Enemy(double, double, double, double, double);
 		~Enemy(void);
@@ -46,8 +46,8 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 
 	this->clockwise = Utility::Random::getRandomSign(false);
 
-	//this->shooter = new Timer(sf::seconds, 1.5f, true, 0.0f,
-	//		&Enemy::shoot, true);
+	this->shooter = new ActionTimer<void(void)>(sf::seconds, 1.5f, true, 0.0f,
+			[&]() {this->shoot();}, true);
 }
 
 Enemy::~Enemy() {

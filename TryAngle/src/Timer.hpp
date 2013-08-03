@@ -1,32 +1,31 @@
 /*
- * Timer.hpp
+ * ActionTimer.hpp
  *
  *  Created on: Jul 31, 2013
  *      Author: Renato Lui Geh
  */
 
-#ifndef TIMER_HPP_
-#define TIMER_HPP_
+#ifndef ActionTimer_HPP_
+#define ActionTimer_HPP_
 
 #include <vector>
+#include <functional>
 
 class Timer {
 	private:
 		static std::vector<Timer*> timers;
-	private:
+	protected:
 		sf::Time time;
 		sf::Time dt;
 
 		bool repeats;
 		bool active;
-
-		void (*action)(void);
 	public:
-		template <typename T, class C>
-			Timer(sf::Time (*)(T), T, bool, T,
-					void (C::*)(void), bool);
+		template <typename T>
+			Timer(sf::Time(*)(T), T, bool, T, bool);
+		virtual ~Timer(void);
 	public:
-		void update(sf::Time);
+		virtual void update(sf::Time);
 		bool isActive(void);
 		void setActive(bool);
 	public:
@@ -38,19 +37,18 @@ class Timer {
 
 std::vector<Timer*> Timer::timers;
 
-template <typename T, class C>
-	Timer::Timer(sf::Time (*format)(T e), T dt, bool repeats=true,
-			T time = 0, void (C::* f)(void) = NULL, bool active=false) {
-
+template <typename T> Timer::Timer(sf::Time (*format)(T e), T dt,
+		bool repeats = false, T time = 0, bool active = false) {
 	this->dt = format(dt);
 	this->repeats = repeats;
 	this->time = format(time);
 	this->active = active;
-	//this->action = f;
 
 	if(active)
 		Timer::add(this);
 }
+
+Timer::~Timer() {}
 
 void Timer::update(sf::Time dt) {
 	if(!this->active)
@@ -63,9 +61,6 @@ void Timer::update(sf::Time dt) {
 
 	if(!this->repeats)
 		this->active = false;
-
-	if(this->action != NULL)
-		this->action();
 }
 
 bool Timer::isActive() {return this->active;}
@@ -102,6 +97,38 @@ void Timer::onUpdate(sf::Time dt) {
 	Timer::timers.erase(std::remove_if(
 			Timer::timers.begin(), Timer::timers.end(),
 			TimerUtility::notActive), Timer::timers.end());
+}
+
+/**********************ACTION_TIMER****************************/
+
+template <typename Fn> class ActionTimer : public Timer {
+	private:
+		std::function<Fn> action;
+	public:
+		template <typename T>
+			ActionTimer(sf::Time (*format)(T e), T dt, bool repeats=true,
+					T time = 0, std::function<Fn> f = NULL, bool active=false) :
+					Timer(format, dt, repeats, time, active) {
+
+				this->action = f;
+
+				if(active)
+					Timer::add(this);
+		}
+		~ActionTimer(void);
+	public:
+		void update(sf::Time);
+};
+
+template<typename Fn> ActionTimer<Fn>::~ActionTimer() {}
+
+template<typename Fn> void ActionTimer<Fn>::update(sf::Time dt) {
+	Timer::update(dt);
+
+	if(!this->active) return;
+
+	if(this->action != NULL)
+		this->action();
 }
 
 #endif

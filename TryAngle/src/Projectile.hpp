@@ -57,13 +57,13 @@ void Projectile::update(sf::Time dt) {
 		return;
 	}
 
-	std::vector<Entity*>* entities = Entity::getEntities();
+	/*std::vector<Entity*>* entities = Entity::getEntities();
 	for(auto it = entities->begin(); it!=entities->end(); ++it)
 		if((*it)->getTeam() != this->team)
 			if((*it)->intersects(this)) {
 				(*it)->destroy();
 				this->destroy();
-			}
+			}*/
 }
 
 #endif
