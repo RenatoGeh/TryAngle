@@ -32,7 +32,7 @@ class Enemy : public Entity {
 };
 
 Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
-		Entity("Enemy", x, y, 2*r, 2*r, vx, vy){
+		Entity("Enemy", x, y, 2*r, 2*r, vx, vy) {
 	this->shape = new sf::CircleShape(r);
 	this->color = new sf::Color(Utility::Random::getRandomColor());
 	this->wasInside = false;
@@ -47,11 +47,16 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 	this->clockwise = Utility::Random::getRandomSign(false);
 
 	this->shooter = new ActionTimer<void(void)>(sf::seconds, 1.5f, true, 0.0f,
-			[&]() {this->shoot();}, true);
+			[&]() {this->shoot();}, true, false);
 }
 
 Enemy::~Enemy() {
 	delete shape;
+
+	shooter->setActive(false);
+	Timer::refresh();
+
+	delete shooter;
 }
 
 void Enemy::draw(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -61,6 +66,8 @@ void Enemy::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 void Enemy::update(sf::Time dt) {
 	Entity::update(dt);
+
+	if(!active) return;
 
 	this->angle += double(this->clockwise)/25;
 

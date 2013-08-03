@@ -51,19 +51,21 @@ void Projectile::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 void Projectile::update(sf::Time dt) {
 	Entity::update(dt);
 
+	if(!this->active) return;
+
 	if(position->x < 0 || position->x > Settings::Width ||
 			position->y < 0 || position->y > Settings::Height) {
 		this->destroy();
 		return;
 	}
 
-	/*std::vector<Entity*>* entities = Entity::getEntities();
+	std::vector<Entity*>* entities = Entity::getEntities();
 	for(auto it = entities->begin(); it!=entities->end(); ++it)
 		if((*it)->getTeam() != this->team)
 			if((*it)->intersects(this)) {
-				(*it)->destroy();
+				(*it)->damage(10);
 				this->destroy();
-			}*/
+			}
 }
 
 #endif

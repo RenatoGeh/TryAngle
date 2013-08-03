@@ -137,7 +137,8 @@ void GameFrame::onUpdate(sf::Time dt) {
 			+ "\nPlayer's speed: " + toString(player->getSpeed())
 			+ "\nMouse position: " + toString(Settings::mouse_position)
 			+ "\nEntities: " + toString(Entity::getEntities()->size())
-			+ "\nPaintables: " + toString(Entity::getPaintables()->size()));
+			+ "\nPaintables: " + toString(Entity::getPaintables()->size())
+			+ "\nPlayer's Health: " + toString(player->getHealth()));
 }
 
 int GameFrame::onCleanup() {

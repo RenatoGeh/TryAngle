@@ -15,8 +15,9 @@
 #include <memory>
 #include <algorithm>
 #include "Vector2D.hpp"
+#include "Mortal.hpp"
 
-class Entity : public sf::Drawable, public sf::Transformable {
+class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 	protected:
 		static std::vector<Entity*> entities;
 		static std::vector<sf::Drawable*> paintables;
@@ -65,6 +66,8 @@ class Entity : public sf::Drawable, public sf::Transformable {
 		virtual bool intersects(Entity*);
 		virtual void shoot(void);
 		virtual void lookAt(double, double);
+	public:
+		bool handleDeath(void);
 };
 
 std::vector<Entity*> Entity::entities;
@@ -92,6 +95,13 @@ Entity::~Entity() {
 }
 
 void Entity::destroy() {this->active = false;}
+
+bool Entity::handleDeath(void) {
+	bool death;
+	if((death=(health<0)))
+		this->destroy();
+	return death;
+}
 
 void Entity::add(Entity* e) {
 	e->active = true;
@@ -189,6 +199,9 @@ void Entity::setColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
 }
 
 void Entity::update(sf::Time dt) {
+	if(this->handleDeath())
+		return;
+
 	position->add(speed);
 	this->setPosition(position->x, position->y);
 	this->setRotation(-180*angle/math::PI);
