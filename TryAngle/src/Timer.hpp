@@ -39,6 +39,7 @@ std::vector<Timer*> Timer::timers;
 
 template <typename T> Timer::Timer(sf::Time (*format)(T e), T dt,
 		bool repeats = false, T time = 0, bool active = false) {
+
 	this->dt = format(dt);
 	this->repeats = repeats;
 	this->time = format(time);
@@ -123,9 +124,18 @@ template <typename Fn> class ActionTimer : public Timer {
 template<typename Fn> ActionTimer<Fn>::~ActionTimer() {}
 
 template<typename Fn> void ActionTimer<Fn>::update(sf::Time dt) {
-	Timer::update(dt);
+	if(!this->active)
+		return;
 
-	if(!this->active) return;
+	this->time += dt;
+
+	if(this->time < this->dt)
+		return;
+
+	if(!this->repeats)
+		this->active = false;
+	else
+		this->time = sf::Time::Zero;
 
 	if(this->action != NULL)
 		this->action();
