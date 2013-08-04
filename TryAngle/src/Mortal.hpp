@@ -14,21 +14,21 @@ class Mortal {
 	public:
 		virtual ~Mortal(void) {};
 	public:
-		double getHealth(void);
+		double getHealth(void) const;
 		void setHealth(double);
-		bool isDead(void);
+		bool isDead(void) const;
 	public:
 		void damage(double);
 		void heal(double);
 		virtual bool handleDeath(void) = 0;
 };
 
-double Mortal::getHealth(void) {return this->health;}
+double Mortal::getHealth(void) const {return this->health;}
 void Mortal::setHealth(double health) {this->health = health;}
 
 void Mortal::damage(double dam) {this->health -= dam;}
 void Mortal::heal(double pts) {this->health += pts;}
 
-bool Mortal::isDead(void) {return health<0;}
+bool Mortal::isDead(void) const {return health<0;}
 
 #endif

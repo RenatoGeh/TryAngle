@@ -25,10 +25,12 @@ class GameFrame {
 		sf::RenderWindow* window;
 		sf::Font font;
 		sf::Clock* thread;
+		Utility::Color::Pattern* background;
 
 		std::ostringstream convert_stream;
 	private:
 		Player* player;
+		Enemy* pet;
 		sf::Text* debug;
 	public:
 		GameFrame(std::string, unsigned short int, unsigned short int);
@@ -49,6 +51,7 @@ GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short
 	this->window = new sf::RenderWindow(sf::VideoMode(width, height),
 			this->title, sf::Style::Close, sf::ContextSettings(0, 0, 8));
 	this->thread = new sf::Clock();
+	this->background = new Utility::Color::Pattern();
 
 	this->window->setVerticalSyncEnabled(true);
 
@@ -57,9 +60,11 @@ GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short
 
 	this->player = NULL;
 	this->debug = NULL;
+	this->pet = NULL;
 }
 
 GameFrame::~GameFrame() {
+	delete pet;
 	delete player;
 	delete debug;
 	delete window;
@@ -79,7 +84,9 @@ bool GameFrame::onInit() {
 	this->debug->setFont(font);
 	this->debug->setCharacterSize(15);
 	this->debug->setColor(sf::Color::Green);
-	Entity::add(this->debug);
+
+	this->pet = new Enemy(100, 100);
+	Entity::add(this->pet);
 
 	return true;
 }
@@ -113,16 +120,22 @@ void GameFrame::onEvent() {
 			} else if(event.type == sf::Event::MouseMoved)
 				Settings::mouse_position->set(
 						event.mouseMove.x, event.mouseMove.y);
+			if(event.type == sf::Event::MouseButtonReleased)
+				if(event.mouseButton.button == sf::Mouse::Right)
+					this->pet->nav->push(
+							event.mouseButton.x, event.mouseButton.y);
 			this->player->onEvent(event);
 		}
 	}
 }
 
 void GameFrame::onRender() {
-	window->clear(Utility::Color::nextColor());
+	window->clear(background->nextColor());
 
 	//TODO: Rendering
 	Entity::paint(window);
+
+	window->draw(*debug);
 
 	window->display();
 }

@@ -8,6 +8,7 @@
 #ifndef VECTOR2D_HPP_
 #define VECTOR2D_HPP_
 
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <SFML/System/Vector2.hpp>
@@ -30,6 +31,11 @@ class Vector2D : public sf::Vector2<float> {
 		Vector2D* sub(Vector2D*);
 		Vector2D* mult(Vector2D*);
 		Vector2D* div(Vector2D*);
+	public:
+		float distSq(Vector2D*);
+		float distSq(float, float);
+		float dist(Vector2D*);
+		float dist(float, float);
 	public:
 		std::string toString(void);
 		bool null(void);
@@ -111,6 +117,21 @@ Vector2D* Vector2D::div(Vector2D* v) {
 	this->y /= v->y;
 	return this;
 }
+
+float Vector2D::distSq(Vector2D* v) {
+	float dx = v->x - this->x;
+	float dy = v->y - this->y;
+	return dx*dx + dy*dy;
+}
+
+float Vector2D::distSq(float x, float y) {
+	float dx = x - this->x;
+	float dy = y - this->y;
+	return dx*dx + dy*dy;
+}
+
+float Vector2D::dist(Vector2D* v) {return sqrt(this->distSq(v));}
+float Vector2D::dist(float x, float y) {return sqrt(this->distSq(x, y));}
 
 bool Vector2D::null() {return x==0 && y==0;}
 

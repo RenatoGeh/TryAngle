@@ -27,9 +27,9 @@ class Timer {
 		virtual ~Timer(void);
 	public:
 		virtual void update(sf::Time);
-		bool isActive(void);
+		bool isActive(void) const;
 		void setActive(bool);
-		bool autoDeletes(void);
+		bool autoDeletes(void) const;
 		void setAutoDeletion(bool);
 	public:
 		static void add(Timer*);
@@ -70,10 +70,10 @@ void Timer::update(sf::Time dt) {
 		this->active = false;
 }
 
-bool Timer::isActive() {return this->active;}
+bool Timer::isActive() const {return this->active;}
 void Timer::setActive(bool active) {this->active = active;}
 
-bool Timer::autoDeletes(void) {return this->auto_deletion;}
+bool Timer::autoDeletes(void) const {return this->auto_deletion;}
 void Timer::setAutoDeletion(bool deletes) {auto_deletion = deletes;}
 
 void Timer::add(Timer* timer) {Timer::timers.push_back(timer);}

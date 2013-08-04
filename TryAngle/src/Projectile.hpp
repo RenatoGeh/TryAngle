@@ -25,7 +25,7 @@ class Projectile : public Entity {
 		void update(sf::Time);
 };
 
-Projectile::Projectile(Entity* parent, double x, double y, double vx, double vy, double r=2) :
+Projectile::Projectile(Entity* parent, double x, double y, double vx, double vy, double r=5) :
 		Entity("Projectile", x+1, y+1, 2*r, 2*r, vx, vy) {
 	this->shape = new sf::CircleShape(r);
 	this->color = new sf::Color(Utility::Random::getRandomColor());
@@ -63,7 +63,7 @@ void Projectile::update(sf::Time dt) {
 	for(auto it = entities->begin(); it!=entities->end(); ++it)
 		if((*it)->getTeam() != this->team)
 			if((*it)->intersects(this)) {
-				(*it)->damage(10);
+				(*it)->damage(0);
 				this->destroy();
 			}
 }

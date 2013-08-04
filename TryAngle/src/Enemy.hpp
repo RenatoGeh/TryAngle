@@ -14,8 +14,11 @@
 #include "Player.hpp"
 #include "Vector2D.hpp"
 #include "Timer.hpp"
+#include "Path.hpp"
 
 class Enemy : public Entity {
+	public:
+		Path* nav;
 	private:
 		bool wasInside;
 		math::byte clockwise;
@@ -46,8 +49,9 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 
 	this->clockwise = Utility::Random::getRandomSign(false);
 
-	this->shooter = new ActionTimer<void(void)>(sf::seconds, 1.5f, true, 0.0f,
-			[&]() {this->shoot();}, true, false);
+	this->shooter = new ActionTimer<void(void)>(sf::seconds, 1.0f, true,
+			0.0f, [&]() {this->shoot();}, true, false);
+	this->nav = new Path(this);
 }
 
 Enemy::~Enemy() {
@@ -57,6 +61,7 @@ Enemy::~Enemy() {
 	Timer::refresh();
 
 	delete shooter;
+	delete nav;
 }
 
 void Enemy::draw(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -65,9 +70,9 @@ void Enemy::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 }
 
 void Enemy::update(sf::Time dt) {
-	Entity::update(dt);
-
 	if(!active) return;
+
+	Entity::update(dt);
 
 	this->angle += double(this->clockwise)/25;
 
@@ -77,11 +82,13 @@ void Enemy::update(sf::Time dt) {
 			this->wasInside = true;
 
 	if(wasInside)
-		if(position->x < 0 || position->x > Settings::Width ||
-				position->y < 0 || position->y > Settings::Height) {
+		if(position->x+size->x < 0 || position->x-size->x > Settings::Width ||
+				position->y+size->y < 0 || position->y-size->y > Settings::Height) {
 			this->destroy();
 			return;
 		}
+
+	this->nav->update(dt);
 }
 
 #endif

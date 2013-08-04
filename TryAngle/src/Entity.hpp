@@ -66,6 +66,7 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 		virtual bool intersects(Entity*);
 		virtual void shoot(void);
 		virtual void lookAt(double, double);
+		virtual void moveTo(double, double);
 	public:
 		bool handleDeath(void);
 };
@@ -216,6 +217,11 @@ bool Entity::intersects(Entity* e) {
 
 void Entity::lookAt(double x, double y) {
 	this->angle = atan2(position->x-x, position->y-y);
+}
+
+void Entity::moveTo(double x, double y) {
+	double theta = atan2(x-position->x, y-position->y);
+	this->speed->set(sin(theta)*5, cos(theta)*5);
 }
 
 #include "Projectile.hpp"
