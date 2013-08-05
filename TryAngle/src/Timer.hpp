@@ -1,12 +1,12 @@
 /*
- * ActionTimer.hpp
+ * Timer.hpp
  *
  *  Created on: Jul 31, 2013
  *      Author: Renato Lui Geh
  */
 
-#ifndef ActionTimer_HPP_
-#define ActionTimer_HPP_
+#ifndef Timer_HPP_
+#define Timer_HPP_
 
 #include <vector>
 #include <functional>

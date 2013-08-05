@@ -29,7 +29,6 @@ class GameFrame {
 
 		std::ostringstream convert_stream;
 	private:
-		Player* player;
 		Enemy* pet;
 		sf::Text* debug;
 	public:
@@ -58,14 +57,12 @@ GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short
 	Settings::Width = width;
 	Settings::Height = height;
 
-	this->player = NULL;
 	this->debug = NULL;
 	this->pet = NULL;
 }
 
 GameFrame::~GameFrame() {
 	delete pet;
-	delete player;
 	delete debug;
 	delete window;
 }
@@ -74,10 +71,8 @@ bool GameFrame::onInit() {
 	if(!font.loadFromFile("src/resources/fonts/LTYPE.ttf"))
 		return false;
 
-	this->player = new Player("Francis J. Underwood",
-			Settings::Width/2-30, Settings::Height/2-30, 30);
-
-	Entity::add(this->player);
+	Player::setPlayer(new Player("Francis J. Underwood",
+			Settings::Width/2-30, Settings::Height/2-30, 30));
 
 	this->debug = new sf::Text();
 	this->debug->setPosition(50, Settings::Height-200);
@@ -124,7 +119,7 @@ void GameFrame::onEvent() {
 				if(event.mouseButton.button == sf::Mouse::Right)
 					this->pet->nav->push(
 							event.mouseButton.x, event.mouseButton.y);
-			this->player->onEvent(event);
+			Player::getPlayer()->onEvent(event);
 		}
 	}
 }
@@ -145,13 +140,13 @@ void GameFrame::onUpdate(sf::Time dt) {
 	Entity::onUpdate(dt);
 	Timer::onUpdate(dt);
 
-	debug->setString("Player's position: [" + toString(player->getPosition().x)
-			+ ", " + toString(player->getPosition().y) + "]"
-			+ "\nPlayer's speed: " + toString(player->getSpeed())
+	debug->setString("Player's position: [" + toString(Player::getPlayer()->getPosition().x)
+			+ ", " + toString(Player::getPlayer()->getPosition().y) + "]"
+			+ "\nPlayer's speed: " + toString(Player::getPlayer()->getSpeed())
 			+ "\nMouse position: " + toString(Settings::mouse_position)
 			+ "\nEntities: " + toString(Entity::getEntities()->size())
 			+ "\nPaintables: " + toString(Entity::getPaintables()->size())
-			+ "\nPlayer's Health: " + toString(player->getHealth()));
+			+ "\nPlayer's Health: " + toString(Player::getPlayer()->getHealth()));
 }
 
 int GameFrame::onCleanup() {

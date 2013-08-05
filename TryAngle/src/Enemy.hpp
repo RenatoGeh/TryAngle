@@ -32,6 +32,8 @@ class Enemy : public Entity {
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(sf::Time dt);
+	public:
+		virtual Entity::Type getID(void);
 };
 
 Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
@@ -90,5 +92,7 @@ void Enemy::update(sf::Time dt) {
 
 	this->nav->update(dt);
 }
+
+Entity::Type Enemy::getID(void) {return Entity::Type::Enemy;}
 
 #endif

@@ -12,6 +12,7 @@
 
 namespace math {
 	typedef char byte;
+	typedef unsigned char u_byte;
 
 	const long double PI = 3.14159265358979323846;
 	template <typename T> short int signum(T e) {return e>0?1:e<0?-1:0;}
@@ -52,7 +53,7 @@ namespace Utility {
 				Pattern(sf::Uint8, sf::Uint8, sf::Uint8);
 				~Pattern(void);
 			private:
-				void modulo(sf::Uint8, short int&);
+				static void modulo(sf::Uint8, short int&);
 			public:
 				sf::Color nextColor(void);
 		};
@@ -77,9 +78,9 @@ namespace Utility {
 		}
 
 		sf::Color Pattern::nextColor(void) {
-			modulo(palette->r, sign_r);
-			modulo(palette->g, sign_g);
-			modulo(palette->b, sign_b);
+			Pattern::modulo(palette->r, sign_r);
+			Pattern::modulo(palette->g, sign_g);
+			Pattern::modulo(palette->b, sign_b);
 
 			palette->r += sign_r;
 			palette->g += sign_g;

@@ -23,6 +23,8 @@ class Projectile : public Entity {
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(sf::Time);
+	public:
+		virtual Entity::Type getID(void);
 };
 
 Projectile::Projectile(Entity* parent, double x, double y, double vx, double vy, double r=5) :
@@ -67,5 +69,7 @@ void Projectile::update(sf::Time dt) {
 				this->destroy();
 			}
 }
+
+Entity::Type Projectile::getID(void) {return Entity::Type::Projectile;}
 
 #endif

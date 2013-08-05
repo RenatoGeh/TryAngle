@@ -14,10 +14,13 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include "Utility.hpp"
 #include "Vector2D.hpp"
 #include "Mortal.hpp"
 
 class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
+	public:
+		enum class Type : math::u_byte {Enemy, Player, Projectile};
 	protected:
 		static std::vector<Entity*> entities;
 		static std::vector<sf::Drawable*> paintables;
@@ -55,6 +58,7 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 		Vector2D* getSpeed(void);
 		sf::Color* getColor(void);
 		bool getTeam(void);
+		virtual Entity::Type getID(void) = 0;
 	public:
 		void setActive(bool);
 		void setSize(double, double);

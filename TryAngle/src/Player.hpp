@@ -16,6 +16,11 @@
 #include "Projectile.hpp"
 
 class Player : public Entity {
+	private:
+		static Player* def_player;
+	public:
+		static Player* getPlayer(void);
+		static void setPlayer(Player*);
 	protected:
 		sf::CircleShape* shape;
 	public:
@@ -25,7 +30,11 @@ class Player : public Entity {
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(sf::Time);
 		bool onEvent(sf::Event&);
+	public:
+		virtual Entity::Type getID(void);
 };
+
+Player* Player::def_player = NULL;
 
 Player::Player(std::string name, double x, double y, double r) :
 		Entity(name, x, y, 2*r, 2*r) {
@@ -89,6 +98,14 @@ bool Player::onEvent(sf::Event& event) {
 	}
 
 	return true;
+}
+
+Entity::Type Player::getID(void) {return Entity::Type::Player;}
+
+Player* Player::getPlayer(void) {return Player::def_player;}
+void Player::setPlayer(Player* player) {
+	Player::def_player = player;
+	Entity::add(Player::def_player);
 }
 
 #endif

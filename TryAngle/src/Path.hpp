@@ -29,7 +29,7 @@ class Path {
 	public:
 		void update(sf::Time);
 	public:
-		bool isEmpty(void);
+		bool isEmpty(void) const;
 };
 
 Path::Path(Entity* parent) {
@@ -40,6 +40,9 @@ Path::Path(Entity* parent) {
 }
 
 Path::~Path(void) {
+	while(!navpts.empty())
+		navpts.pop();
+
 	delete current;
 }
 
@@ -65,11 +68,9 @@ void Path::push(double x, double y) {
 	if(this->navpts.empty()) {
 		this->current = new Vector2D(x, y);
 		this->navpts.push(*(this->current));
-		std::cout << this->current << std::endl;
 		this->parent->moveTo(x, y);
 		return;
 	}
-	std::cout << x << '\t' << y << std::endl;
 	this->navpts.push(Vector2D(x, y));
 }
 void Path::pop(void) {this->navpts.pop();}
@@ -78,6 +79,6 @@ Vector2D* Path::getCurrentMarker(void) {return this->current;}
 void Path::setCurrentMarker(double x, double y) {this->current->set(x, y);}
 std::queue<Vector2D>* Path::getNavPoints(void) {return &navpts;}
 
-bool Path::isEmpty(void) {return this->navpts.empty();}
+bool Path::isEmpty(void) const {return this->navpts.empty();}
 
 #endif
