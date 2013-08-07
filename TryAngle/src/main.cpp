@@ -11,7 +11,7 @@ namespace Settings {
 #include "GameFrame.hpp"
 
 int main() {
-	GameFrame app("TryAngle", 800, 600);
+	GameFrame app("I M43D 4 G4ME W1T XAPEZ 1N IT!!11ONE", 800, 600);
 
 	return app.onExecute();
 }
