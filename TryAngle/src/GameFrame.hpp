@@ -132,6 +132,8 @@ void GameFrame::onRender() {
 
 	window->draw(*debug);
 
+	UserInterface::onRender(window);
+
 	window->display();
 }
 
@@ -139,6 +141,7 @@ void GameFrame::onUpdate(sf::Time dt) {
 	//TODO: Updating
 	Entity::onUpdate(dt);
 	Timer::onUpdate(dt);
+	UserInterface::onUpdate(dt);
 
 	debug->setString("Player's position: [" + toString(Player::getPlayer()->getPosition().x)
 			+ ", " + toString(Player::getPlayer()->getPosition().y) + "]"
@@ -146,7 +149,8 @@ void GameFrame::onUpdate(sf::Time dt) {
 			+ "\nMouse position: " + toString(Settings::mouse_position)
 			+ "\nEntities: " + toString(Entity::getEntities()->size())
 			+ "\nPaintables: " + toString(Entity::getPaintables()->size())
-			+ "\nPlayer's Health: " + toString(Player::getPlayer()->getHealth()));
+			+ "\nPlayer's Health: " + toString(Player::getPlayer()->getHealth())
+			+ "\nPlayer's Experience: " + toString(Player::getPlayer()->getExp()));
 }
 
 int GameFrame::onCleanup() {

@@ -48,6 +48,9 @@ Player::Player(std::string name, double x, double y, double r) :
 	this->setOrigin(0, 0);
 	this->setPosition(position->x, position->y);
 	this->setOrigin(r, r);
+
+	this->setHealth(500);
+	this->setExp(100);
 }
 
 Player::~Player() {
@@ -83,6 +86,9 @@ void Player::update(sf::Time dt) {
 	else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		this->speed->x = 2.5;
 	else this->speed->x = 0;
+
+	this->damage(dt.asSeconds()*30);
+	this->subExp(dt.asSeconds()*15);
 }
 
 bool Player::onEvent(sf::Event& event) {
@@ -102,10 +108,13 @@ bool Player::onEvent(sf::Event& event) {
 
 Entity::Type Player::getID(void) {return Entity::Type::Player;}
 
+#include "UserInterface.hpp"
+
 Player* Player::getPlayer(void) {return Player::def_player;}
 void Player::setPlayer(Player* player) {
 	Player::def_player = player;
 	Entity::add(Player::def_player);
+	UserInterface::bind(Player::def_player);
 }
 
 #endif
