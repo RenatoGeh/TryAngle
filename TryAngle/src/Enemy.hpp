@@ -30,6 +30,11 @@ class Enemy : public Entity {
 		Enemy(double, double, double, double, double);
 		~Enemy(void);
 	public:
+		void setLevel(unsigned short int);
+		void addLevel(unsigned short int);
+		void subLevel(unsigned short int);
+		unsigned short int getLevel(void);
+	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(sf::Time dt);
 	public:
@@ -54,6 +59,8 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 	this->shooter = new ActionTimer<void(void)>(sf::seconds, 1.0f, true,
 			0.0f, [&]() {this->shoot();}, true, false);
 	this->nav = new Path(this);
+
+	this->setHealth(30);
 }
 
 Enemy::~Enemy() {
@@ -92,6 +99,26 @@ void Enemy::update(sf::Time dt) {
 
 	this->nav->update(dt);
 }
+
+void Enemy::setLevel(unsigned short int level) {
+	if(this->level != level) {
+		this->level = level;
+		this->shape->setPointCount(3 + this->level);
+	}
+}
+
+void Enemy::addLevel(unsigned short int increment = 1) {
+	this->level += increment;
+	this->shape->setPointCount(3 + this->level);
+}
+void Enemy::subLevel(unsigned short int decrement = 1) {
+	if(this->level > 0) {
+		this->level -= decrement;
+		this->shape->setPointCount(3 + this->level);
+	}
+}
+
+unsigned short int Enemy::getLevel(void) {return this->level;}
 
 Entity::Type Enemy::getID(void) {return Entity::Type::Enemy;}
 

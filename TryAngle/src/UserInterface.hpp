@@ -27,8 +27,6 @@ class UserInterface : public sf::Drawable {
 
 		double* exp;
 		double* life;
-
-		unsigned short int level;
 	public:
 		UserInterface(Player*);
 		~UserInterface(void);
@@ -50,18 +48,17 @@ UserInterface::UserInterface(Player* parent) {
 	this->exp_shape = new sf::RectangleShape(lifeSize);
 	this->exp_shape->setOutlineColor(sf::Color::Black);
 	this->exp_shape->setOutlineThickness(1.5);
-	this->exp_shape->setFillColor(sf::Color(0, 125, 125));
+	this->exp_shape->setFillColor(sf::Color(0, 170, 170));
 
 	this->lifeSize = Vector2D(5, Settings::Height-80);
 	this->life_shape = new sf::RectangleShape(expSize);
 	this->life_shape->setOutlineColor(sf::Color::Black);
 	this->life_shape->setOutlineThickness(1.5);
-	this->life_shape->setFillColor(sf::Color(0, 125, 0));
+	this->life_shape->setFillColor(sf::Color(0, 180, 0));
 
-	this->exp_shape->setPosition(40, Settings::Height-75);
-	this->life_shape->setPosition(50, 40);
+	this->exp_shape->setPosition(40, Settings::Height-40);
+	this->life_shape->setPosition(20, 40);
 
-	this->level = 0;
 	this->life = &(parent->health);
 	this->exp = &(parent->exp);
 }
@@ -73,12 +70,17 @@ UserInterface::~UserInterface(void) {
 
 void UserInterface::update(sf::Time dt) {
 	this->expSize.set(
-			(Settings::Width-80)*(*exp)/Mortal::MAX_EXP, 5);
+			(Settings::Width-75)*(*exp)/Mortal::MAX_EXP, 7.5);
 	this->lifeSize.set(
-			5, (Settings::Height-75)*(*life)/Mortal::MAX_HEALTH);
+			7.5, (Settings::Height-80)*(*life)/Mortal::MAX_HEALTH);
 
 	this->exp_shape->setSize(expSize);
 	this->life_shape->setSize(lifeSize);
+
+	double delta = (Settings::Height-80) - lifeSize.y;
+	sf::Vector2<float> pos = this->life_shape->getPosition();
+
+	this->life_shape->setPosition(pos.x, delta - 50);
 }
 
 void UserInterface::draw(sf::RenderTarget& target, sf::RenderStates states) const {

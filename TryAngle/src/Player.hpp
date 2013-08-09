@@ -13,7 +13,6 @@
 #include <string>
 #include "Entity.hpp"
 #include "Vector2D.hpp"
-#include "Projectile.hpp"
 
 class Player : public Entity {
 	private:
@@ -26,6 +25,11 @@ class Player : public Entity {
 	public:
 		Player(std::string, double, double, double);
 		~Player(void);
+	public:
+		void setLevel(unsigned short int);
+		void addLevel(unsigned short int);
+		void subLevel(unsigned short int);
+		unsigned short int getLevel(void);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(sf::Time);
@@ -40,15 +44,16 @@ Player::Player(std::string name, double x, double y, double r) :
 		Entity(name, x, y, 2*r, 2*r) {
 	this->shape = new sf::CircleShape(r);
 	this->color = new sf::Color(0, 0, 255);
-	this->team = false;
+	this->team = true;
 
-	this->shape->setPointCount(3);
+	this->shape->setPointCount(3 + this->level);
 	this->shape->setFillColor(*color);
 
 	this->setOrigin(0, 0);
 	this->setPosition(position->x, position->y);
 	this->setOrigin(r, r);
 
+	this->level = 0;
 	this->setHealth(500);
 	this->setExp(100);
 }
@@ -65,15 +70,10 @@ void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 void Player::update(sf::Time dt) {
 	Entity::update(dt);
 
-	if(position->x < 0 || position->x + size->x > Settings::Width)
-		speed->x = 0;
-	if(position->y < 0 || position->y + size->y > Settings::Height)
-		speed->y = 0;
-
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		this->angle += 2;
+		this->angle += math::PI/60;
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		this->angle -= 2;
+		this->angle -= math::PI/60;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		this->speed->y = -2.5;
@@ -87,8 +87,18 @@ void Player::update(sf::Time dt) {
 		this->speed->x = 2.5;
 	else this->speed->x = 0;
 
-	this->damage(dt.asSeconds()*30);
-	this->subExp(dt.asSeconds()*15);
+	if(position->x < 0 && speed->x < 0)
+		speed->x = 0;
+	else if(position->x > Settings::Width && speed->x > 0)
+		speed->x = 0;
+
+	if(position->y < 0 && speed->y < 0)
+		speed->y = 0;
+	else if(position->y > Settings::Height && speed->y > 0)
+		speed->y = 0;
+
+	this->damage(dt.asSeconds()*15);
+	this->subExp(dt.asSeconds()*10);
 }
 
 bool Player::onEvent(sf::Event& event) {
@@ -98,6 +108,10 @@ bool Player::onEvent(sf::Event& event) {
 		case sf::Event::KeyReleased:
 			if(event.key.code == sf::Keyboard::Space)
 				this->shoot();
+			if(event.key.code == sf::Keyboard::L) {
+				this->addLevel(1);
+				std::cout << this->getLevel() << std::endl;
+			}
 		break;
 		default:
 			return false;
@@ -108,6 +122,26 @@ bool Player::onEvent(sf::Event& event) {
 
 Entity::Type Player::getID(void) {return Entity::Type::Player;}
 
+void Player::setLevel(unsigned short int level) {
+	if(this->level != level) {
+		this->level = level;
+		this->shape->setPointCount(3 + this->level);
+	}
+}
+
+void Player::addLevel(unsigned short int increment = 1) {
+	this->level += increment;
+	this->shape->setPointCount(3 + this->level);
+}
+void Player::subLevel(unsigned short int decrement = 1) {
+	if(this->level > 0) {
+		this->level -= decrement;
+		this->shape->setPointCount(3 + this->level);
+	}
+}
+
+unsigned short int Player::getLevel(void) {return this->level;}
+
 #include "UserInterface.hpp"
 
 Player* Player::getPlayer(void) {return Player::def_player;}
@@ -115,6 +149,12 @@ void Player::setPlayer(Player* player) {
 	Player::def_player = player;
 	Entity::add(Player::def_player);
 	UserInterface::bind(Player::def_player);
+}
+
+namespace ProjectileUtility {
+	void transferExp(double n) {
+		Player::getPlayer()->addExp(n);
+	}
 }
 
 #endif

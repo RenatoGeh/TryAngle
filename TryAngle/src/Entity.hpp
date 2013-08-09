@@ -34,6 +34,8 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 
 		double angle;
 
+		unsigned short int level;
+
 		std::string name;
 		sf::Color* color;
 	public:
@@ -66,6 +68,11 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 		void setColor(sf::Uint8, sf::Uint8, sf::Uint8);
 		void setTeam(bool);
 	public:
+		virtual void setLevel(unsigned short int) = 0;
+		virtual void addLevel(unsigned short int) = 0;
+		virtual void subLevel(unsigned short int) = 0;
+		virtual unsigned short int getLevel(void) = 0;
+	public:
 		virtual void update(sf::Time);
 		virtual bool intersects(Entity*);
 		virtual void shoot(void);
@@ -87,9 +94,10 @@ Entity::Entity(std::string name, double x, double y, double w=0, double h=0,
 	this->position = new Vector2D(x, y);
 	this->size = new Vector2D(w, h);
 	this->speed = new Vector2D(vx, vy);
-	this->team = true;
+	this->team = false;
 
 	this->active = false;
+	this->level = 0;
 }
 
 Entity::~Entity() {
@@ -213,10 +221,22 @@ void Entity::update(sf::Time dt) {
 }
 
 bool Entity::intersects(Entity* e) {
-	return (position->x < e->position->x + e->size->x &&
+	/* Old rectangle boundaries checking. *BURP*. Excuse me. */
+	/*return (position->x < e->position->x + e->size->x &&
 			position->x + size->x > e->position->x &&
 			position->y < e->position->y + e->size->y &&
-			position->y + size->y > e->position->y);
+			position->y + size->y > e->position->y);*/
+
+	double dx = e->position->x - position->x;
+	double dy = e->position->y - position->y;
+
+
+	double rA = size->x/2;
+	double rB = e->size->x/2;
+
+	double dist = rA*rA + rB*rB;
+
+	return (dx*dx + dy*dy) <= dist;
 }
 
 void Entity::lookAt(double x, double y) {
@@ -233,9 +253,10 @@ void Entity::moveTo(double x, double y) {
 void Entity::shoot(void) {
 	double alpha, theta = math::PI-(this->getRotation()*math::PI/180);
 	double r = this->size->x/2;
+	unsigned short int k = 3 + this->level;
 
-	for(short int i=0;i<3;i++) {
-		alpha = theta + i*(2*math::PI/3);
+	for(short int i=0;i<k;i++) {
+		alpha = theta + i*(2*math::PI/k);
 		Entity::add(new Projectile(this,
 				position->x + r*sin(alpha),
 				position->y + r*cos(alpha),

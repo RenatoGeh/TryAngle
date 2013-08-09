@@ -73,6 +73,6 @@ void Mortal::subExp(double n) {
 		this->exp -= n;
 }
 
-bool Mortal::isDead(void) const {return health<0;}
+bool Mortal::isDead(void) const {return health<=0;}
 
 #endif

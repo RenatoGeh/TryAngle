@@ -28,6 +28,7 @@ class GameFrame {
 		Utility::Color::Pattern* background;
 
 		std::ostringstream convert_stream;
+		bool debug_mode;
 	private:
 		Enemy* pet;
 		sf::Text* debug;
@@ -53,6 +54,7 @@ GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short
 	this->background = new Utility::Color::Pattern();
 
 	this->window->setVerticalSyncEnabled(true);
+	this->debug_mode = true;
 
 	Settings::Width = width;
 	Settings::Height = height;
@@ -71,7 +73,7 @@ bool GameFrame::onInit() {
 	if(!font.loadFromFile("src/resources/fonts/LTYPE.ttf"))
 		return false;
 
-	Player::setPlayer(new Player("Francis J. Underwood",
+	Player::setPlayer(new Player("Your mom",
 			Settings::Width/2-30, Settings::Height/2-30, 30));
 
 	this->debug = new sf::Text();
@@ -119,6 +121,11 @@ void GameFrame::onEvent() {
 				if(event.mouseButton.button == sf::Mouse::Right)
 					this->pet->nav->push(
 							event.mouseButton.x, event.mouseButton.y);
+
+			if(event.type == sf::Event::KeyReleased)
+				if(event.key.code == sf::Keyboard::F1)
+					this->debug_mode = !this->debug_mode;
+
 			Player::getPlayer()->onEvent(event);
 		}
 	}
@@ -130,7 +137,8 @@ void GameFrame::onRender() {
 	//TODO: Rendering
 	Entity::paint(window);
 
-	window->draw(*debug);
+	if(debug_mode)
+		window->draw(*debug);
 
 	UserInterface::onRender(window);
 
@@ -143,14 +151,15 @@ void GameFrame::onUpdate(sf::Time dt) {
 	Timer::onUpdate(dt);
 	UserInterface::onUpdate(dt);
 
-	debug->setString("Player's position: [" + toString(Player::getPlayer()->getPosition().x)
-			+ ", " + toString(Player::getPlayer()->getPosition().y) + "]"
-			+ "\nPlayer's speed: " + toString(Player::getPlayer()->getSpeed())
-			+ "\nMouse position: " + toString(Settings::mouse_position)
-			+ "\nEntities: " + toString(Entity::getEntities()->size())
-			+ "\nPaintables: " + toString(Entity::getPaintables()->size())
-			+ "\nPlayer's Health: " + toString(Player::getPlayer()->getHealth())
-			+ "\nPlayer's Experience: " + toString(Player::getPlayer()->getExp()));
+	if(debug_mode)
+		debug->setString("Player's position: [" + toString(Player::getPlayer()->getPosition().x)
+				+ ", " + toString(Player::getPlayer()->getPosition().y) + "]"
+				+ "\nPlayer's speed: " + toString(Player::getPlayer()->getSpeed())
+				+ "\nMouse position: " + toString(Settings::mouse_position)
+				+ "\nEntities: " + toString(Entity::getEntities()->size())
+				+ "\nPaintables: " + toString(Entity::getPaintables()->size())
+				+ "\nPlayer's Health: " + toString(Player::getPlayer()->getHealth())
+				+ "\nPlayer's Experience: " + toString(Player::getPlayer()->getExp()));
 }
 
 int GameFrame::onCleanup() {

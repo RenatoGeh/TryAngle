@@ -13,6 +13,7 @@
 #include <SFML/System.hpp>
 #include "Vector2D.hpp"
 #include "Entity.hpp"
+#include "Player.hpp"
 
 class Projectile : public Entity {
 	protected:
@@ -23,6 +24,11 @@ class Projectile : public Entity {
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(sf::Time);
+	public:
+		void setLevel(unsigned short int) {};
+		void addLevel(unsigned short int) {};
+		void subLevel(unsigned short int) {};
+		unsigned short int getLevel(void) {return 0;};
 	public:
 		virtual Entity::Type getID(void);
 };
@@ -50,6 +56,10 @@ void Projectile::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(*shape, states);
 }
 
+namespace ProjectileUtility {
+	void transferExp(double);
+}
+
 void Projectile::update(sf::Time dt) {
 	Entity::update(dt);
 
@@ -62,12 +72,23 @@ void Projectile::update(sf::Time dt) {
 	}
 
 	std::vector<Entity*>* entities = Entity::getEntities();
-	for(auto it = entities->begin(); it!=entities->end(); ++it)
-		if((*it)->getTeam() != this->team)
-			if((*it)->intersects(this)) {
-				(*it)->damage(0);
-				this->destroy();
-			}
+	for(auto it = entities->begin(); it!=entities->end(); ++it) {
+		Entity* e = *it;
+
+		if(e->getID() != Entity::Type::Projectile) {
+			if(e->getTeam() != this->team)
+				if(e->intersects(this)) {
+					e->damage(10);
+					if(e->isDead()) {
+						ProjectileUtility::transferExp(10);
+						e->destroy();
+					}
+					this->destroy();
+				}
+		} else {
+			//TODO: Projectile x Projectile collision. HIPPOPOTAMUS.
+		}
+	}
 }
 
 Entity::Type Projectile::getID(void) {return Entity::Type::Projectile;}
