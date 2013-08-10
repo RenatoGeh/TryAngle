@@ -55,7 +55,7 @@ namespace Utility {
 			private:
 				static void modulo(sf::Uint8, short int&);
 			public:
-				sf::Color nextColor(void);
+				sf::Color& nextColor(void);
 		};
 
 		Pattern::Pattern(sf::Uint8 r = Random::getUnsignedRandom(0, 256),
@@ -77,7 +77,7 @@ namespace Utility {
 			if(comp + sign > 255 || comp + sign < 0) sign = -sign;
 		}
 
-		sf::Color Pattern::nextColor(void) {
+		sf::Color& Pattern::nextColor(void) {
 			Pattern::modulo(palette->r, sign_r);
 			Pattern::modulo(palette->g, sign_g);
 			Pattern::modulo(palette->b, sign_b);

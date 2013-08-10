@@ -37,6 +37,7 @@ class UserInterface : public sf::Drawable {
 		static void bind(Player*);
 		static void onUpdate(sf::Time);
 		static void onRender(sf::RenderWindow*);
+		static void onCleanup(void);
 };
 
 UserInterface* UserInterface::ui = nullptr;
@@ -100,5 +101,7 @@ void UserInterface::onUpdate(sf::Time dt) {
 void UserInterface::onRender(sf::RenderWindow *window) {
 	window->draw(*UserInterface::ui);
 }
+
+void UserInterface::onCleanup(void) {delete UserInterface::ui;}
 
 #endif

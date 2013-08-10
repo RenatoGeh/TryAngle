@@ -17,6 +17,7 @@
 #include "Vector2D.hpp"
 #include "Player.hpp"
 #include "Enemy.hpp"
+#include "Background.hpp"
 
 class GameFrame {
 	private:
@@ -25,7 +26,6 @@ class GameFrame {
 		sf::RenderWindow* window;
 		sf::Font font;
 		sf::Clock* thread;
-		Utility::Color::Pattern* background;
 
 		std::ostringstream convert_stream;
 		bool debug_mode;
@@ -51,7 +51,6 @@ GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short
 	this->window = new sf::RenderWindow(sf::VideoMode(width, height),
 			this->title, sf::Style::Close, sf::ContextSettings(0, 0, 8));
 	this->thread = new sf::Clock();
-	this->background = new Utility::Color::Pattern();
 
 	this->window->setVerticalSyncEnabled(true);
 	this->debug_mode = true;
@@ -75,6 +74,8 @@ bool GameFrame::onInit() {
 
 	Player::setPlayer(new Player("Your mom",
 			Settings::Width/2-30, Settings::Height/2-30, 30));
+
+	Background::onInit();
 
 	this->debug = new sf::Text();
 	this->debug->setPosition(50, Settings::Height-200);
@@ -132,7 +133,9 @@ void GameFrame::onEvent() {
 }
 
 void GameFrame::onRender() {
-	window->clear(background->nextColor());
+	window->clear();
+
+	Background::onRender(window);
 
 	//TODO: Rendering
 	Entity::paint(window);
@@ -147,6 +150,7 @@ void GameFrame::onRender() {
 
 void GameFrame::onUpdate(sf::Time dt) {
 	//TODO: Updating
+	Background::onUpdate(dt);
 	Entity::onUpdate(dt);
 	Timer::onUpdate(dt);
 	UserInterface::onUpdate(dt);
@@ -166,6 +170,8 @@ int GameFrame::onCleanup() {
 	try {
 		Entity::clear();
 		Timer::clear();
+		UserInterface::onCleanup();
+		Background::onCleanup();
 	} catch(...) {
 		std::cerr << "Cleanup gone wrong. That's bad yo." << std::endl;
 		return EXIT_FAILURE;
