@@ -27,7 +27,7 @@ class Path {
 		void push(double, double);
 		void pop(void);
 	public:
-		void update(sf::Time);
+		void update(const sf::Time&);
 	public:
 		bool isEmpty(void) const;
 };
@@ -46,7 +46,7 @@ Path::~Path(void) {
 	delete current;
 }
 
-void Path::update(sf::Time dt) {
+void Path::update(const sf::Time& dt) {
 	if(this->current == NULL)
 		return;
 

@@ -32,10 +32,10 @@ class UserInterface : public sf::Drawable {
 		~UserInterface(void);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
-		void update(sf::Time);
+		void update(const sf::Time&);
 	public:
 		static void bind(Player*);
-		static void onUpdate(sf::Time);
+		static void onUpdate(const sf::Time&);
 		static void onRender(sf::RenderWindow*);
 		static void onCleanup(void);
 };
@@ -69,7 +69,7 @@ UserInterface::~UserInterface(void) {
 	delete exp_shape;
 }
 
-void UserInterface::update(sf::Time dt) {
+void UserInterface::update(const sf::Time& dt) {
 	this->expSize.set(
 			(Settings::Width-75)*(*exp)/Mortal::MAX_EXP, 7.5);
 	this->lifeSize.set(
@@ -94,7 +94,7 @@ void UserInterface::bind(Player* p) {
 		ui = new UserInterface(p);
 }
 
-void UserInterface::onUpdate(sf::Time dt) {
+void UserInterface::onUpdate(const sf::Time& dt) {
 	UserInterface::ui->update(dt);
 }
 

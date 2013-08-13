@@ -22,7 +22,7 @@ class BTile : public sf::VertexArray {
 		BTile(sf::PrimitiveType, unsigned int);
 		~BTile(void);
 	public:
-		void update(sf::Time);
+		void update(const sf::Time&);
 
 	friend class Background;
 };
@@ -42,7 +42,7 @@ BTile::~BTile(void) {
 	}
 }
 
-void BTile::update(sf::Time dt) {
+void BTile::update(const sf::Time& dt) {
 	for(unsigned int i=0;i<this->getVertexCount();++i)
 		this->operator [](i).color = this->palette.at(i)->nextColor();
 }
@@ -58,10 +58,10 @@ class Background : public sf::Drawable {
 		Background(Player*);
 		~Background(void);
 	public:
-		void update(sf::Time);
+		void update(const sf::Time&);
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 	public:
-		static void onUpdate(sf::Time);
+		static void onUpdate(const sf::Time&);
 		static void onRender(sf::RenderWindow*);
 		static void onInit(Player*);
 		static void onCleanup(void);
@@ -90,7 +90,7 @@ Background::~Background(void) {
 	}
 }
 
-void Background::update(sf::Time dt) {
+void Background::update(const sf::Time& dt) {
 	if(this->level != this->parent->getLevel()) {
 		this->level = this->parent->getLevel();
 		//TODO: Add BTiles.
@@ -105,7 +105,7 @@ void Background::draw(sf::RenderTarget& target, sf::RenderStates state) const {
 		target.draw(*(*it), state);
 }
 
-void Background::onUpdate(sf::Time dt) {Background::back->update(dt);}
+void Background::onUpdate(const sf::Time& dt) {Background::back->update(dt);}
 void Background::onRender(sf::RenderWindow* window) {
 	window->draw(*Background::back);
 }

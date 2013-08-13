@@ -32,6 +32,7 @@ class GameFrame {
 	private:
 		Enemy* pet;
 		sf::Text* debug;
+		sf::Text* fps;
 	public:
 		GameFrame(std::string, unsigned short int, unsigned short int);
 		~GameFrame();
@@ -40,7 +41,7 @@ class GameFrame {
 		int onExecute(void);
 		void onEvent(void);
 		void onRender(void);
-		void onUpdate(sf::Time);
+		void onUpdate(const sf::Time&);
 		int onCleanup(void);
 	public:
 		template <typename T> std::string toString(T);
@@ -60,6 +61,7 @@ GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short
 
 	this->debug = NULL;
 	this->pet = NULL;
+	this->fps = NULL;
 }
 
 GameFrame::~GameFrame() {
@@ -82,6 +84,13 @@ bool GameFrame::onInit() {
 	this->debug->setFont(font);
 	this->debug->setCharacterSize(15);
 	this->debug->setColor(sf::Color::Green);
+
+	this->fps = new sf::Text();
+	this->fps->setPosition(Settings::Width-55, 10);
+	this->fps->setFont(font);
+	this->fps->setCharacterSize(30);
+	this->fps->setColor(sf::Color::Yellow);
+	this->fps->setStyle(sf::Text::Bold);
 
 	this->pet = new Enemy(100, 100);
 	Entity::add(this->pet);
@@ -140,22 +149,24 @@ void GameFrame::onRender() {
 	//TODO: Rendering
 	Entity::paint(window);
 
-	if(debug_mode)
+	if(debug_mode) {
 		window->draw(*debug);
+		window->draw(*fps);
+	}
 
 	UserInterface::onRender(window);
 
 	window->display();
 }
 
-void GameFrame::onUpdate(sf::Time dt) {
+void GameFrame::onUpdate(const sf::Time& dt) {
 	//TODO: Updating
 	Background::onUpdate(dt);
 	Entity::onUpdate(dt);
 	Timer::onUpdate(dt);
 	UserInterface::onUpdate(dt);
 
-	if(debug_mode)
+	if(debug_mode) {
 		debug->setString("Player's position: [" + toString(Player::getPlayer()->getPosition().x)
 				+ ", " + toString(Player::getPlayer()->getPosition().y) + "]"
 				+ "\nPlayer's speed: " + toString(Player::getPlayer()->getSpeed())
@@ -164,6 +175,8 @@ void GameFrame::onUpdate(sf::Time dt) {
 				+ "\nPaintables: " + toString(Entity::getPaintables()->size())
 				+ "\nPlayer's Health: " + toString(Player::getPlayer()->getHealth())
 				+ "\nPlayer's Experience: " + toString(Player::getPlayer()->getExp()));
+		fps->setString(toString(1/dt.asSeconds()));
+	}
 }
 
 int GameFrame::onCleanup() {

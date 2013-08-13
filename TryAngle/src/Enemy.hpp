@@ -15,6 +15,7 @@
 #include "Vector2D.hpp"
 #include "Timer.hpp"
 #include "Path.hpp"
+#include "Item.hpp"
 
 class Enemy : public Entity {
 	public:
@@ -36,9 +37,10 @@ class Enemy : public Entity {
 		unsigned short int getLevel(void);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
-		void update(sf::Time dt);
+		void update(const sf::Time& dt);
 	public:
 		virtual Entity::Type getID(void);
+		virtual bool handleDeath(void);
 };
 
 Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
@@ -78,7 +80,7 @@ void Enemy::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(*shape, states);
 }
 
-void Enemy::update(sf::Time dt) {
+void Enemy::update(const sf::Time& dt) {
 	if(!active) return;
 
 	Entity::update(dt);
@@ -121,5 +123,20 @@ void Enemy::subLevel(unsigned short int decrement = 1) {
 unsigned short int Enemy::getLevel(void) {return this->level;}
 
 Entity::Type Enemy::getID(void) {return Entity::Type::Enemy;}
+
+bool Enemy::handleDeath(void) {
+	if(Entity::handleDeath()) {
+		unsigned long int k = Utility::Random::getUnsignedRandom(0, 5);
+		std::cout << k << std::endl;
+		if(k==2) {
+			math::u_byte choice = Utility::Random::getUnsignedRandom(0, 4);
+			Entity::add(new Item<void(void)>(this->position->x, this->position->y,
+					choice==0?Item<void(void)>::Predefined::Health:
+							choice==1?Item<void(void)>::Predefined::Exp:
+									Item<void(void)>::Predefined::Level));
+		}
+		return true;
+	} else return false;
+}
 
 #endif

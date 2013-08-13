@@ -23,12 +23,7 @@ class Projectile : public Entity {
 		~Projectile(void);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
-		void update(sf::Time);
-	public:
-		void setLevel(unsigned short int) {};
-		void addLevel(unsigned short int) {};
-		void subLevel(unsigned short int) {};
-		unsigned short int getLevel(void) {return 0;};
+		void update(const sf::Time&);
 	public:
 		virtual Entity::Type getID(void);
 };
@@ -60,7 +55,7 @@ namespace ProjectileUtility {
 	void transferExp(double);
 }
 
-void Projectile::update(sf::Time dt) {
+void Projectile::update(const sf::Time& dt) {
 	Entity::update(dt);
 
 	if(!this->active) return;
@@ -75,14 +70,15 @@ void Projectile::update(sf::Time dt) {
 	for(auto it = entities->begin(); it!=entities->end(); ++it) {
 		Entity* e = *it;
 
+		if(e->getID() == Entity::Type::Item)
+			continue;
+
 		if(e->getID() != Entity::Type::Projectile) {
 			if(e->getTeam() != this->team)
 				if(e->intersects(this)) {
 					e->damage(10);
-					if(e->isDead()) {
+					if(e->isDead())
 						ProjectileUtility::transferExp(10);
-						e->destroy();
-					}
 					this->destroy();
 				}
 		} else {

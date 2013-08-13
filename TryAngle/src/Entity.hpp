@@ -20,7 +20,7 @@
 
 class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 	public:
-		enum class Type : math::u_byte {Enemy, Player, Projectile};
+		enum class Type : math::u_byte {Enemy, Player, Projectile, Item};
 	protected:
 		static std::vector<Entity*> entities;
 		static std::vector<sf::Drawable*> paintables;
@@ -51,7 +51,7 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 		static std::vector<sf::Drawable*>* getPaintables(void);
 		static std::vector<Entity*>* getEntities(void);
 		static void paint(sf::RenderWindow*);
-		static void onUpdate(sf::Time);
+		static void onUpdate(const sf::Time&);
 	public:
 		virtual void destroy(void);
 	public:
@@ -68,18 +68,18 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 		void setColor(sf::Uint8, sf::Uint8, sf::Uint8);
 		void setTeam(bool);
 	public:
-		virtual void setLevel(unsigned short int) = 0;
-		virtual void addLevel(unsigned short int) = 0;
-		virtual void subLevel(unsigned short int) = 0;
-		virtual unsigned short int getLevel(void) = 0;
+		virtual void setLevel(unsigned short int) {};
+		virtual void addLevel(unsigned short int) {};
+		virtual void subLevel(unsigned short int) {};
+		virtual unsigned short int getLevel(void) {return 0;};
 	public:
-		virtual void update(sf::Time);
+		virtual void update(const sf::Time&);
 		virtual bool intersects(Entity*);
 		virtual void shoot(void);
 		virtual void lookAt(double, double);
 		virtual void moveTo(double, double);
 	public:
-		bool handleDeath(void);
+		virtual bool handleDeath(void);
 };
 
 std::vector<Entity*> Entity::entities;
@@ -111,7 +111,7 @@ void Entity::destroy() {this->active = false;}
 
 bool Entity::handleDeath(void) {
 	bool death;
-	if((death=(health<0)))
+	if((death=this->isDead()))
 		this->destroy();
 	return death;
 }
@@ -185,7 +185,7 @@ namespace EntityUtility {
 	}
 }
 
-void Entity::onUpdate(sf::Time dt) {
+void Entity::onUpdate(const sf::Time& dt) {
 	for(std::vector<Entity*>::iterator it = Entity::entities.begin();
 			it!=Entity::entities.end();++it)
 		if((*it)->active)
@@ -211,7 +211,7 @@ void Entity::setColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
 	color = new sf::Color(r, g, b);
 }
 
-void Entity::update(sf::Time dt) {
+void Entity::update(const sf::Time& dt) {
 	if(this->handleDeath())
 		return;
 

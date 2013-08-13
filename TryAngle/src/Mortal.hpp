@@ -18,11 +18,11 @@ class Mortal {
 	public:
 		virtual ~Mortal(void) {};
 	public:
-		double getHealth(void);
+		double getHealth(void) const;
 		void setHealth(double);
 		bool isDead(void) const;
 	public:
-		double getExp(void);
+		double getExp(void) const;
 		void setExp(double);
 		void addExp(double);
 		void subExp(double);
@@ -34,7 +34,7 @@ class Mortal {
 	friend class UserInterface;
 };
 
-double Mortal::getHealth(void) {return this->health;}
+double Mortal::getHealth(void) const {return this->health;}
 void Mortal::setHealth(double health) {
 	if(health > MAX_HEALTH || health < 0)
 		return;
@@ -54,7 +54,7 @@ void Mortal::heal(double pts) {
 		this->health += pts;
 }
 
-double Mortal::getExp(void) {return this->exp;}
+double Mortal::getExp(void) const {return this->exp;}
 void Mortal::setExp(double exp) {
 	if(exp > MAX_EXP || exp < 0)
 		return;

@@ -28,7 +28,7 @@ namespace Utility {
 
 		unsigned long int getUnsignedRandom(unsigned long int min=0,
 				unsigned long int max = gen.max()) {
-			return min + (gen() % max);
+			return min + (gen() % (max-min));
 		}
 
 		short int getRandomSign(bool zero=true) {

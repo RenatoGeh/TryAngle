@@ -32,7 +32,7 @@ class Player : public Entity {
 		unsigned short int getLevel(void);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
-		void update(sf::Time);
+		void update(const sf::Time&);
 		bool onEvent(sf::Event&);
 	public:
 		virtual Entity::Type getID(void);
@@ -67,7 +67,7 @@ void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(*shape, states);
 }
 
-void Player::update(sf::Time dt) {
+void Player::update(const sf::Time& dt) {
 	Entity::update(dt);
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
@@ -97,8 +97,8 @@ void Player::update(sf::Time dt) {
 	else if(position->y > Settings::Height && speed->y > 0)
 		speed->y = 0;
 
-	this->damage(dt.asSeconds()*15);
-	this->subExp(dt.asSeconds()*10);
+	this->damage(dt.asSeconds()*5);
+	this->subExp(dt.asSeconds()*2.5);
 }
 
 bool Player::onEvent(sf::Event& event) {
