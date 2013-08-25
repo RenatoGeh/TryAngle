@@ -16,6 +16,10 @@ namespace math {
 
 	const long double PI = 3.14159265358979323846;
 	template <typename T> short int signum(T e) {return e>0?1:e<0?-1:0;}
+
+	template <typename T> inline T max(T a, T b) {return b<a?a:b;}
+	template <typename T> inline T min(T a, T b) {return b>a?a:b;}
+	template <typename T> inline T abs(T n) {return n<-1?-n:n;}
 }
 
 namespace Utility {
@@ -27,7 +31,7 @@ namespace Utility {
 		}
 
 		unsigned long int getUnsignedRandom(unsigned long int min=0,
-				unsigned long int max = gen.max()) {
+				unsigned long int max=gen.max()) {
 			return min + (gen() % (max-min));
 		}
 
@@ -36,8 +40,12 @@ namespace Utility {
 			else return (getUnsignedRandom(0, 11)%2==0)?-1:1;
 		}
 
-		long int getRandom(long int min=0, long int max = gen.max()/2-1) {
-			return min + getRandomSign(false)*getUnsignedRandom(min, max);
+		long int getRandom(long int min=0, long int max=gen.max()/2-1) {
+			return getUnsignedRandom(0, math::abs(max-min))+min;
+		}
+
+		long int getBoundRandom(long int x1, long int x2, long int x3, long int x4) {
+			return getRandomSign(false)<0?getRandom(x1, x2):getRandom(x3, x4);
 		}
 	}
 
@@ -88,6 +96,12 @@ namespace Utility {
 
 			return *palette;
 		}
+	}
+
+	namespace Spawn {
+		//This is a forward declaration of namespace Spawn.
+		//It is implemented accordingly throughout their respective
+		//representatives (i.e. YOUR MOM).
 	}
 }
 

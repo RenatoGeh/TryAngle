@@ -12,12 +12,14 @@
 #include "Vector2D.hpp"
 
 class Path {
+	public:
+		static constexpr math::u_byte DEFAULT_NAVPOINTS = 10;
 	private:
 		Entity* parent;
 		std::queue<Vector2D> navpts;
 		Vector2D* current;
 	public:
-		Path(Entity*);
+		Path(Entity*, bool);
 		~Path(void);
 	public:
 		Vector2D* getCurrentMarker(void);
@@ -26,28 +28,38 @@ class Path {
 	public:
 		void push(double, double);
 		void pop(void);
+		void clear(void);
 	public:
 		void update(const sf::Time&);
 	public:
 		bool isEmpty(void) const;
 };
 
-Path::Path(Entity* parent) {
+Path::Path(Entity* parent, bool random=true) {
 	this->parent = parent;
+	this->current = nullptr;
 
-	this->navpts = std::queue<Vector2D>();
-	this->current = NULL;
+	if(random) {
+		for(int i=1;i<Path::DEFAULT_NAVPOINTS;++i)
+			this->push(
+					Utility::Random::getUnsignedRandom(0, Settings::Width),
+					Utility::Random::getUnsignedRandom(0, Settings::Height));
+
+		this->push(
+				Utility::Random::getBoundRandom(-100, 0, Settings::Width, Settings::Width+100),
+				Utility::Random::getBoundRandom(-100, 0, Settings::Height, Settings::Height+100));
+	}
 }
 
 Path::~Path(void) {
 	while(!navpts.empty())
 		navpts.pop();
 
-	delete current;
+	current = nullptr;
 }
 
 void Path::update(const sf::Time& dt) {
-	if(this->current == NULL)
+	if(this->current == nullptr)
 		return;
 
 	float x = this->parent->getPosition().x;
@@ -55,7 +67,7 @@ void Path::update(const sf::Time& dt) {
 
 	if(this->current->distSq(x, y) < 25) {
 		this->navpts.pop();
-		this->current = this->navpts.empty()?NULL:&(this->navpts.front());
+		this->current = this->navpts.empty()?nullptr:&(this->navpts.front());
 
 		if(current==NULL)
 			this->parent->setSpeed(0, 0);
@@ -74,6 +86,11 @@ void Path::push(double x, double y) {
 	this->navpts.push(Vector2D(x, y));
 }
 void Path::pop(void) {this->navpts.pop();}
+
+void Path::clear(void) {
+	while(!this->navpts.empty())
+		this->navpts.pop();
+}
 
 Vector2D* Path::getCurrentMarker(void) {return this->current;}
 void Path::setCurrentMarker(double x, double y) {this->current->set(x, y);}

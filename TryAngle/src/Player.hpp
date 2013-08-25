@@ -38,7 +38,7 @@ class Player : public Entity {
 		virtual Entity::Type getID(void);
 };
 
-Player* Player::def_player = NULL;
+Player* Player::def_player = nullptr;
 
 Player::Player(std::string name, double x, double y, double r) :
 		Entity(name, x, y, 2*r, 2*r) {

@@ -149,17 +149,6 @@ void Entity::remove(sf::Drawable* e, bool deletion=true) {
 		delete e;
 }
 
-void Entity::clear() {
-	while(!Entity::entities.empty()) {
-		delete Entity::entities.back();
-		Entity::entities.pop_back();
-	}
-	while(!Entity::paintables.empty()) {
-		delete Entity::paintables.back();
-		Entity::paintables.pop_back();
-	}
-}
-
 std::vector<sf::Drawable*>* Entity::getPaintables() {
 	return &Entity::paintables;
 }
@@ -182,6 +171,20 @@ namespace EntityUtility {
 			delete e;
 		}
 		return flag;
+	}
+}
+
+void Entity::clear() {
+	for(auto it = Entity::entities.begin();it!=Entity::entities.end();++it)
+		(*it)->destroy();
+
+	Entity::entities.erase(std::remove_if(
+			Entity::entities.begin(), Entity::entities.end(),
+			EntityUtility::notActive), Entity::entities.end());
+
+	while(!Entity::paintables.empty()) {
+		delete Entity::paintables.back();
+		Entity::paintables.pop_back();
 	}
 }
 

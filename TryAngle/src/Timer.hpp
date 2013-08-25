@@ -86,10 +86,10 @@ void Timer::remove(Timer* timer) {
 }
 
 void Timer::clear() {
-	while(!Timer::timers.empty()) {
-		delete Timer::timers.back();
-		Timer::timers.pop_back();
-	}
+	for(auto it = Timer::timers.begin();it!=Timer::timers.end();++it)
+		(*it)->setActive(false);
+
+	Timer::refresh();
 }
 
 namespace TimerUtility {

@@ -33,6 +33,7 @@ class GameFrame {
 		Enemy* pet;
 		sf::Text* debug;
 		sf::Text* fps;
+		ActionTimer<void(void)>* spawner;
 	public:
 		GameFrame(std::string, unsigned short int, unsigned short int);
 		~GameFrame();
@@ -62,12 +63,13 @@ GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short
 	this->debug = NULL;
 	this->pet = NULL;
 	this->fps = NULL;
+	this->spawner = NULL;
 }
 
 GameFrame::~GameFrame() {
-	delete pet;
 	delete debug;
 	delete window;
+	delete spawner;
 }
 
 bool GameFrame::onInit() {
@@ -91,6 +93,10 @@ bool GameFrame::onInit() {
 	this->fps->setCharacterSize(30);
 	this->fps->setColor(sf::Color::Yellow);
 	this->fps->setStyle(sf::Text::Bold);
+
+	this->spawner = new ActionTimer<void(void)>(sf::seconds, 3.0f,
+			true, 0.0f, [](void){std::cout << "DERP" << std::endl;},
+			true, false);
 
 	this->pet = new Enemy(100, 100);
 	Entity::add(this->pet);
@@ -129,7 +135,7 @@ void GameFrame::onEvent() {
 						event.mouseMove.x, event.mouseMove.y);
 			if(event.type == sf::Event::MouseButtonReleased)
 				if(event.mouseButton.button == sf::Mouse::Right)
-					this->pet->nav->push(
+					this->pet->getPath()->push(
 							event.mouseButton.x, event.mouseButton.y);
 
 			if(event.type == sf::Event::KeyReleased)

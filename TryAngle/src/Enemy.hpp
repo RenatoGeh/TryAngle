@@ -18,9 +18,8 @@
 #include "Item.hpp"
 
 class Enemy : public Entity {
-	public:
-		Path* nav;
 	private:
+		Path* nav;
 		bool wasInside;
 		math::byte clockwise;
 	protected:
@@ -41,6 +40,8 @@ class Enemy : public Entity {
 	public:
 		virtual Entity::Type getID(void);
 		virtual bool handleDeath(void);
+	public:
+		Path* getPath(void);
 };
 
 Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
@@ -59,7 +60,7 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 	this->clockwise = Utility::Random::getRandomSign(false);
 
 	this->shooter = new ActionTimer<void(void)>(sf::seconds, 1.0f, true,
-			0.0f, [&]() {this->shoot();}, true, false);
+			0.0f, [&](void) {this->shoot();}, true, false);
 	this->nav = new Path(this);
 
 	this->setHealth(30);
@@ -127,9 +128,8 @@ Entity::Type Enemy::getID(void) {return Entity::Type::Enemy;}
 bool Enemy::handleDeath(void) {
 	if(Entity::handleDeath()) {
 		unsigned long int k = Utility::Random::getUnsignedRandom(0, 5);
-		std::cout << k << std::endl;
 		if(k==2) {
-			math::u_byte choice = Utility::Random::getUnsignedRandom(0, 4);
+			math::u_byte choice = Utility::Random::getUnsignedRandom(0, 3);
 			Entity::add(new Item<void(void)>(this->position->x, this->position->y,
 					choice==0?Item<void(void)>::Predefined::Health:
 							choice==1?Item<void(void)>::Predefined::Exp:
@@ -137,6 +137,18 @@ bool Enemy::handleDeath(void) {
 		}
 		return true;
 	} else return false;
+}
+
+Path* Enemy::getPath(void) {return this->nav;}
+
+namespace Utility {
+	namespace Spawn {
+		inline void enemy(void) {
+			Entity::add(new Enemy(
+					Random::getBoundRandom(-100, 0, Settings::Width, Settings::Width+100),
+					Random::getBoundRandom(-100, 0, Settings::Height, Settings::Height+100)));
+		}
+	}
 }
 
 #endif
