@@ -60,7 +60,9 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 	this->clockwise = Utility::Random::getRandomSign(false);
 
 	this->shooter = new ActionTimer<void(void)>(sf::seconds, 1.0f, true,
-			0.0f, [&](void) {this->shoot();}, true, false);
+			0.0f, [&](void) {this->shoot();}, false, false);
+	this->shooter->setActive(false);
+
 	this->nav = new Path(this);
 
 	this->setHealth(30);
@@ -86,6 +88,11 @@ void Enemy::update(const sf::Time& dt) {
 
 	Entity::update(dt);
 
+	if(!this->shooter->isActive()) {
+		this->shooter->setActive(true);
+		Timer::add(this->shooter);
+	}
+
 	this->angle += double(this->clockwise)/25;
 
 	if(!wasInside)
@@ -94,8 +101,8 @@ void Enemy::update(const sf::Time& dt) {
 			this->wasInside = true;
 
 	if(wasInside)
-		if(position->x+size->x < 0 || position->x-size->x > Settings::Width ||
-				position->y+size->y < 0 || position->y-size->y > Settings::Height) {
+		if(position->x < 0 || position->x > Settings::Width ||
+				position->y < 0 || position->y > Settings::Height) {
 			this->destroy();
 			return;
 		}

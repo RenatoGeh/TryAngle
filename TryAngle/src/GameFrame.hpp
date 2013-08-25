@@ -13,6 +13,7 @@
 #include <sstream>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include "Timer.hpp"
 #include "Utility.hpp"
 #include "Vector2D.hpp"
 #include "Player.hpp"
@@ -60,10 +61,10 @@ GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short
 	Settings::Width = width;
 	Settings::Height = height;
 
-	this->debug = NULL;
-	this->pet = NULL;
-	this->fps = NULL;
-	this->spawner = NULL;
+	this->debug = nullptr;
+	this->pet = nullptr;
+	this->fps = nullptr;
+	this->spawner = nullptr;
 }
 
 GameFrame::~GameFrame() {
@@ -94,9 +95,8 @@ bool GameFrame::onInit() {
 	this->fps->setColor(sf::Color::Yellow);
 	this->fps->setStyle(sf::Text::Bold);
 
-	this->spawner = new ActionTimer<void(void)>(sf::seconds, 3.0f,
-			true, 0.0f, [](void){std::cout << "DERP" << std::endl;},
-			true, false);
+	this->spawner = new ActionTimer<void(void)>(sf::seconds, 10.0f,
+			true, 0.0f, Utility::Spawn::enemy, true, false);
 
 	this->pet = new Enemy(100, 100);
 	Entity::add(this->pet);
@@ -138,9 +138,12 @@ void GameFrame::onEvent() {
 					this->pet->getPath()->push(
 							event.mouseButton.x, event.mouseButton.y);
 
-			if(event.type == sf::Event::KeyReleased)
+			if(event.type == sf::Event::KeyReleased) {
 				if(event.key.code == sf::Keyboard::F1)
 					this->debug_mode = !this->debug_mode;
+				else if(event.key.code == sf::Keyboard::F2)
+					Utility::Spawn::enemy();
+			}
 
 			Player::getPlayer()->onEvent(event);
 		}

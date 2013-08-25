@@ -26,7 +26,7 @@ class Timer {
 			Timer(sf::Time(*)(T), T, bool, T, bool, bool);
 		virtual ~Timer(void);
 	public:
-		virtual void update(const sf::Time&);
+		virtual void update(const sf::Time&) = 0;
 		bool isActive(void) const;
 		void setActive(bool);
 		bool autoDeletes(void) const;
@@ -56,19 +56,6 @@ template <typename T> Timer::Timer(sf::Time (*format)(T e), T dt,
 }
 
 Timer::~Timer() {}
-
-void Timer::update(const sf::Time& dt) {
-	if(!this->active)
-		return;
-
-	this->time += dt;
-
-	if(this->time < this->dt)
-		return;
-
-	if(!this->repeats)
-		this->active = false;
-}
 
 bool Timer::isActive() const {return this->active;}
 void Timer::setActive(bool active) {this->active = active;}
@@ -101,8 +88,13 @@ namespace TimerUtility {
 }
 
 void Timer::onUpdate(const sf::Time& dt) {
+	Timer::timers.erase(std::remove_if(
+			Timer::timers.begin(), Timer::timers.end(),
+			TimerUtility::notActive), Timer::timers.end());
+
 	for(auto it = Timer::timers.begin();it!=Timer::timers.end();++it)
-		(*it)->update(dt);
+		if((*it)->active)
+			(*it)->update(dt);
 
 	Timer::timers.erase(std::remove_if(
 			Timer::timers.begin(), Timer::timers.end(),
@@ -140,9 +132,6 @@ template <typename Fn> class ActionTimer : public Timer {
 template<typename Fn> ActionTimer<Fn>::~ActionTimer() {}
 
 template<typename Fn> void ActionTimer<Fn>::update(const sf::Time& dt) {
-	if(!this->active)
-		return;
-
 	this->time += dt;
 
 	if(this->time < this->dt)
@@ -150,6 +139,7 @@ template<typename Fn> void ActionTimer<Fn>::update(const sf::Time& dt) {
 
 	if(!this->repeats) {
 		this->active = false;
+		this->action();
 		return;
 	} else
 		this->time = sf::Time::Zero;
