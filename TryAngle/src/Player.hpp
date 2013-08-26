@@ -33,7 +33,7 @@ class Player : public Entity {
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(const sf::Time&);
-		bool onEvent(sf::Event&);
+		bool onEvent(const sf::Event&);
 	public:
 		virtual Entity::Type getID(void);
 };
@@ -101,7 +101,7 @@ void Player::update(const sf::Time& dt) {
 	this->subExp(dt.asSeconds()*2.5);
 }
 
-bool Player::onEvent(sf::Event& event) {
+bool Player::onEvent(const sf::Event& event) {
 	switch(event.type) {
 		case sf::Event::KeyPressed:
 		break;

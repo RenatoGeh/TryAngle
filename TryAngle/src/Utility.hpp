@@ -20,6 +20,21 @@ namespace math {
 	template <typename T> inline T max(T a, T b) {return b<a?a:b;}
 	template <typename T> inline T min(T a, T b) {return b>a?a:b;}
 	template <typename T> inline T abs(T n) {return n<-1?-n:n;}
+
+	template <long int N, long int I> struct Power {
+		enum {value = N * Power<N, I-1>::value};
+	};
+
+	template <long int N> struct Power<N, 0> {
+		enum {value	= 1};
+	};
+
+	template <typename T> inline T pow(T base, T exp) {
+		if(exp==0) return 1;
+		T p;
+		for(p=base;exp>1;p*=base,--exp);
+		return p;
+	}
 }
 
 namespace Utility {
