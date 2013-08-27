@@ -9,6 +9,7 @@
 #define UTILITY_HPP_
 
 #include <random>
+#include <iostream>
 
 namespace math {
 	typedef char byte;
@@ -35,6 +36,13 @@ namespace math {
 		for(p=base;exp>1;p*=base,--exp);
 		return p;
 	}
+
+	template <typename T> inline void printBinary(T n) {
+		T p;
+		for(p=1;p<n;p*=2);
+		for(;p>0;p/=2)
+			std::cout << (n/p)%2;
+	}
 }
 
 namespace Utility {
@@ -43,6 +51,13 @@ namespace Utility {
 
 		sf::Color getRandomColor() {
 			return sf::Color(gen()%256, gen()%256, gen()%256);
+		}
+
+		sf::Color getInverseColor(const sf::Color& orig) {
+			return sf::Color(
+					(255-orig.r)%256,
+					(255-orig.b)%256,
+					(255-orig.g)%256);
 		}
 
 		unsigned long int getUnsignedRandom(unsigned long int min=0,
