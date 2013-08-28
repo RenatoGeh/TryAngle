@@ -13,6 +13,7 @@
 #include <sstream>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include "Button.hpp"
 #include "Timer.hpp"
 #include "Utility.hpp"
 #include "Vector2D.hpp"
@@ -194,6 +195,7 @@ int GameFrame::onCleanup() {
 		Timer::clear();
 		UserInterface::onCleanup();
 		Background::onCleanup();
+		Button::onCleanup();
 	} catch(...) {
 		std::cerr << "Cleanup gone wrong. That's bad yo." << std::endl;
 		return EXIT_FAILURE;
