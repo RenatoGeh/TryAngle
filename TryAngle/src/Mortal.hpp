@@ -10,8 +10,8 @@
 
 class Mortal {
 	public:
-		static constexpr double MAX_HEALTH = 800;
-		static constexpr double MAX_EXP    = 500;
+		static const double MAX_HEALTH;
+		static const double MAX_EXP;
 	protected:
 		double health = 100;
 		double exp = 0;
@@ -33,6 +33,9 @@ class Mortal {
 
 	friend class UserInterface;
 };
+
+double Mortal::MAX_HEALTH = 800;
+double Mortal::MAX_EXP = 500;
 
 double Mortal::getHealth(void) const {return this->health;}
 void Mortal::setHealth(double health) {

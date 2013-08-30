@@ -15,8 +15,8 @@
 
 class Button : public Component {
 	private:
-		static constexpr sf::Font* FONT;
-		static constexpr double MAX_ANGLE;
+		static const sf::Font* FONT;
+		static const double MAX_ANGLE;
 	private:
 		sf::Color* color;
 		sf::Color* invColor;
@@ -47,6 +47,7 @@ class Button : public Component {
 	public:
 		bool onEvent(const sf::Event&);
 		void update(const sf::Time&);
+		void draw(sf::RenderTarget&, sf::RenderStates) const;
 	public:
 		static void onCleanup(void) {delete Button::FONT;}
 };

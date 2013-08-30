@@ -36,6 +36,7 @@ class Timer {
 		static void remove(Timer*);
 		static void clear(void);
 		static void onUpdate(const sf::Time&);
+		static void onCleanup(void);
 		static void refresh(void);
 };
 
@@ -54,8 +55,6 @@ template <typename T> Timer::Timer(sf::Time (*format)(T e), T dt,
 	if(active)
 		Timer::add(this);
 }
-
-Timer::~Timer() {}
 
 bool Timer::isActive() const {return this->active;}
 void Timer::setActive(bool active) {this->active = active;}
@@ -105,6 +104,13 @@ void Timer::refresh(void) {
 	Timer::timers.erase(std::remove_if(
 			Timer::timers.begin(), Timer::timers.end(),
 			TimerUtility::notActive), Timer::timers.end());
+}
+
+void Timer::onCleanup(void) {
+	while(!timers.empty()) {
+		delete timers.back();
+		timers.pop_back();
+	}
 }
 
 /**********************ACTION_TIMER****************************/

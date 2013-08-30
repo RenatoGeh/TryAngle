@@ -13,7 +13,7 @@
 
 class Path {
 	public:
-		static constexpr math::u_byte DEFAULT_NAVPOINTS = 10;
+		static const math::u_byte DEFAULT_NAVPOINTS;
 	private:
 		Entity* parent;
 		std::queue<Vector2D> navpts;
@@ -34,6 +34,8 @@ class Path {
 	public:
 		bool isEmpty(void) const;
 };
+
+math::u_byte Path::DEFAULT_NAVPOINTS = 10;
 
 Path::Path(Entity* parent, bool random=true) {
 	this->parent = parent;
