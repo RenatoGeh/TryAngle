@@ -10,10 +10,13 @@
 
 #include <random>
 #include <iostream>
+#include <ctime>
+#include "Gambs.hpp"
 
 namespace math {
 	typedef char byte;
 	typedef unsigned char u_byte;
+	typedef unsigned long int u_id;
 
 	const long double PI = 3.14159265358979323846;
 	template <typename T> short int signum(T e) {return e>0?1:e<0?-1:0;}
@@ -47,7 +50,7 @@ namespace math {
 
 namespace Utility {
 	namespace Random {
-		std::default_random_engine gen;
+		std::default_random_engine gen(time(0));
 
 		sf::Color getRandomColor() {
 			return sf::Color(gen()%256, gen()%256, gen()%256);
@@ -91,7 +94,7 @@ namespace Utility {
 				Pattern(sf::Uint8, sf::Uint8, sf::Uint8);
 				~Pattern(void);
 			private:
-				static void modulo(sf::Uint8, short int&);
+				inline static void modulo(sf::Uint8, short int&);
 			public:
 				sf::Color& nextColor(void);
 		};
@@ -111,7 +114,7 @@ namespace Utility {
 			delete palette;
 		}
 
-		void Pattern::modulo(sf::Uint8 comp, short int& sign) {
+		inline void Pattern::modulo(sf::Uint8 comp, short int& sign) {
 			if(comp + sign > 255 || comp + sign < 0) sign = -sign;
 		}
 

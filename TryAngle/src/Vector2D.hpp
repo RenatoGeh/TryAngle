@@ -18,29 +18,29 @@ class Vector2D : public sf::Vector2<float> {
 		Vector2D(float, float);
 		Vector2D(Vector2D*);
 	public:
-		Vector2D* set(float, float);
-		Vector2D* set(Vector2D*);
-		Vector2D* reset(void);
+		inline Vector2D* set(float, float);
+		inline Vector2D* set(Vector2D*);
+		inline Vector2D* reset(void);
 	public:
-		Vector2D* add(float, float);
-		Vector2D* sub(float, float);
-		Vector2D* mult(float, float);
-		Vector2D* div(float, float);
+		inline Vector2D* add(float, float);
+		inline Vector2D* sub(float, float);
+		inline Vector2D* mult(float, float);
+		inline Vector2D* div(float, float);
 	public:
-		Vector2D* add(Vector2D*);
-		Vector2D* sub(Vector2D*);
-		Vector2D* mult(Vector2D*);
-		Vector2D* div(Vector2D*);
+		inline Vector2D* add(Vector2D*);
+		inline Vector2D* sub(Vector2D*);
+		inline Vector2D* mult(Vector2D*);
+		inline Vector2D* div(Vector2D*);
 	public:
-		float distSq(Vector2D*);
-		float distSq(float, float);
-		float dist(Vector2D*);
-		float dist(float, float);
+		inline float distSq(Vector2D*);
+		inline float distSq(float, float);
+		inline float dist(Vector2D*);
+		inline float dist(float, float);
 	public:
-		std::string toString(void);
-		bool null(void);
+		inline bool null(void) const;
 	public:
 		friend std::ostream& operator << (std::ostream&, const Vector2D*);
+		friend std::ostream& operator << (std::ostream&, const Vector2D&);
 };
 
 Vector2D::Vector2D(float x=0, float y=0) {
@@ -53,90 +53,95 @@ Vector2D::Vector2D(Vector2D* v) {
 	this->y = v->y;
 }
 
-Vector2D* Vector2D::set(float x=0, float y=0) {
+inline Vector2D* Vector2D::set(float x=0, float y=0) {
 	this->x = x;
 	this->y = y;
 	return this;
 }
 
-Vector2D* Vector2D::set(Vector2D* v) {
+inline Vector2D* Vector2D::set(Vector2D* v) {
 	this->x = v->x;
 	this->y = v->y;
 	return this;
 }
 
-Vector2D* Vector2D::reset() {
+inline Vector2D* Vector2D::reset() {
 	this->x = this->y = 0;
 	return this;
 }
 
-Vector2D* Vector2D::add(float x, float y=0) {
+inline Vector2D* Vector2D::add(float x, float y=0) {
 	this->x += x;
 	this->y += y;
 	return this;
 }
 
-Vector2D* Vector2D::sub(float x, float y=0) {
+inline Vector2D* Vector2D::sub(float x, float y=0) {
 	this->x -= x;
 	this->y -= y;
 	return this;
 }
 
-Vector2D* Vector2D::mult(float x, float y=1) {
+inline Vector2D* Vector2D::mult(float x, float y=1) {
 	this->x *= x;
 	this->y *= y;
 	return this;
 }
 
-Vector2D* Vector2D::div(float x, float y=1) {
+inline Vector2D* Vector2D::div(float x, float y=1) {
 	this->x /= x;
 	this->y /= y;
 	return this;
 }
 
-Vector2D* Vector2D::add(Vector2D* v) {
+inline Vector2D* Vector2D::add(Vector2D* v) {
 	this->x += v->x;
 	this->y += v->y;
 	return this;
 }
 
-Vector2D* Vector2D::sub(Vector2D* v) {
+inline Vector2D* Vector2D::sub(Vector2D* v) {
 	this->x -= v->x;
 	this->y -= v->y;
 	return this;
 }
 
-Vector2D* Vector2D::mult(Vector2D* v) {
+inline Vector2D* Vector2D::mult(Vector2D* v) {
 	this->x *= v->x;
 	this->y *= v->y;
 	return this;
 }
 
-Vector2D* Vector2D::div(Vector2D* v) {
+inline Vector2D* Vector2D::div(Vector2D* v) {
 	this->x /= v->x;
 	this->y /= v->y;
 	return this;
 }
 
-float Vector2D::distSq(Vector2D* v) {
+inline float Vector2D::distSq(Vector2D* v) {
 	float dx = v->x - this->x;
 	float dy = v->y - this->y;
 	return dx*dx + dy*dy;
 }
 
-float Vector2D::distSq(float x, float y) {
+inline float Vector2D::distSq(float x, float y) {
 	float dx = x - this->x;
 	float dy = y - this->y;
 	return dx*dx + dy*dy;
 }
 
-float Vector2D::dist(Vector2D* v) {return sqrt(this->distSq(v));}
-float Vector2D::dist(float x, float y) {return sqrt(this->distSq(x, y));}
+inline float Vector2D::dist(Vector2D* v) {return sqrt(this->distSq(v));}
+inline float Vector2D::dist(float x, float y) {return sqrt(this->distSq(x, y));}
 
-bool Vector2D::null() {return x==0 && y==0;}
+inline bool Vector2D::null() const {return x==0 && y==0;}
 
 std::ostream& operator << (std::ostream& stream, const Vector2D* v) {
-	stream << "[" << v->x << ", " << v->y << "]";
+	stream << '[' << v->x << ", " << v->y << ']';
+	return stream;
+}
+
+std::ostream& operator << (std::ostream& stream, const Vector2D& v) {
+	stream << '[' << v.x << ", " << v.y << ']';
 	return stream;
 }
 

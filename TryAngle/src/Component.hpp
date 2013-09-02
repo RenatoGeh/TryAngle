@@ -15,11 +15,11 @@
 
 class Component : public sf::Drawable {
 	private:
-		static unsigned long int global_ids;
-		static unsigned long int recursive_id(unsigned long int);
-		static unsigned long int nextID(void);
+		static math::u_id global_ids;
+		static math::u_id recursive_id(unsigned long int);
+		static math::u_id nextID(void);
 	private:
-		unsigned long int id;
+		math::u_id id;
 	protected:
 		Vector2D pos;
 		Vector2D size;
@@ -32,7 +32,7 @@ class Component : public sf::Drawable {
 		virtual Vector2D getSize(void) const;
 		virtual void setSize(double, double);
 
-		unsigned long int getID(void);
+		math::u_id getID(void);
 	public:
 		virtual bool onEvent(const sf::Event&) = 0;
 		virtual void update(const sf::Time&) = 0;
@@ -57,15 +57,15 @@ Vector2D Component::getSize(void) const {return size;}
 void Component::setPosition(double x, double y) {this->pos.set(x, y);}
 void Component::setSize(double x, double y) {this->size.set(x, y);}
 
-unsigned long int Component::getID(void) {return this->id;}
+math::u_id Component::getID(void) {return this->id;}
 
-unsigned long int Component::recursive_id(unsigned long int global) {
+math::u_id Component::recursive_id(math::u_id global) {
 	if(global%2==0) return 0;
 	else return Component::recursive_id(global/2)+1;
 }
 
-unsigned long int Component::nextID(void) {
-	unsigned long int id = Component::recursive_id(Component::global_ids);
+math::u_id Component::nextID(void) {
+	math::u_id id = Component::recursive_id(Component::global_ids);
 	Component::global_ids += math::pow(2ul, id);
 	return id;
 }

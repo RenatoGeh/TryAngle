@@ -35,6 +35,8 @@ class Player : public Entity {
 		void update(const sf::Time&);
 		bool onEvent(const sf::Event&);
 	public:
+		bool handleDeath(void);
+	public:
 		virtual Entity::Type getID(void);
 };
 
@@ -46,6 +48,8 @@ Player::Player(std::string name, double x, double y, double r) :
 	this->color = new sf::Color(0, 0, 255);
 	this->team = true;
 
+	this->shape->setOutlineColor(sf::Color::Black);
+	this->shape->setOutlineThickness(1.5);
 	this->shape->setPointCount(3 + this->level);
 	this->shape->setFillColor(*color);
 
@@ -138,6 +142,10 @@ void Player::subLevel(unsigned short int decrement = 1) {
 		this->level -= decrement;
 		this->shape->setPointCount(3 + this->level);
 	}
+}
+
+bool Player::handleDeath(void) {
+	return this->isDead();
 }
 
 unsigned short int Player::getLevel(void) {return this->level;}

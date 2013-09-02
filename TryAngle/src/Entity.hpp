@@ -110,10 +110,11 @@ Entity::~Entity() {
 void Entity::destroy() {this->active = false;}
 
 bool Entity::handleDeath(void) {
-	bool death;
-	if((death=this->isDead()))
+	if(this->isDead()) {
 		this->destroy();
-	return death;
+		return true;
+	}
+	return false;
 }
 
 void Entity::add(Entity* e) {
@@ -263,7 +264,7 @@ void Entity::shoot(void) {
 		Entity::add(new Projectile(this,
 				position->x + r*sin(alpha),
 				position->y + r*cos(alpha),
-				sin(alpha)*5, cos(alpha)*5));
+				sin(alpha)*7.5, cos(alpha)*7.5));
 	}
 }
 

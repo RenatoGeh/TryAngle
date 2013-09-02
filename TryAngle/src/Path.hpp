@@ -35,7 +35,7 @@ class Path {
 		bool isEmpty(void) const;
 };
 
-math::u_byte Path::DEFAULT_NAVPOINTS = 10;
+const math::u_byte Path::DEFAULT_NAVPOINTS = 10;
 
 Path::Path(Entity* parent, bool random=true) {
 	this->parent = parent;

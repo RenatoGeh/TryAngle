@@ -34,6 +34,8 @@ Projectile::Projectile(Entity* parent, double x, double y, double vx, double vy,
 	this->color = new sf::Color(Utility::Random::getRandomColor());
 	this->team = parent->getTeam();
 
+	this->shape->setOutlineColor(sf::Color::Black);
+	this->shape->setOutlineThickness(1.5);
 	this->shape->setPointCount(4);
 	this->shape->setFillColor(*color);
 

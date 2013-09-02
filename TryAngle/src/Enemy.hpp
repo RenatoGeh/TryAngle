@@ -50,7 +50,9 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 	this->color = new sf::Color(Utility::Random::getRandomColor());
 	this->wasInside = false;
 
-	this->shape->setPointCount(3);
+	this->shape->setOutlineColor(sf::Color::Black);
+	this->shape->setOutlineThickness(1.5);
+	this->shape->setPointCount(3+Player::getPlayer()->getLevel());
 	this->shape->setFillColor(*color);
 
 	this->setOrigin(0, 0);

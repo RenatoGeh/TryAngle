@@ -16,6 +16,7 @@ class Menu : public sf::Drawable {
 	private:
 		std::vector<Component*> components;
 		sf::Text title;
+		bool active;
 	public:
 		Menu(std::string);
 		~Menu(void);
@@ -28,8 +29,8 @@ class Menu : public sf::Drawable {
 		void clear(void);
 	public:
 		virtual void onEvent(const sf::Event&) = 0;
-		void update(const sf::Time&);
-		void draw(sf::RenderTarget&, sf::RenderStates) const;
+		virtual void update(const sf::Time&);
+		virtual void draw(sf::RenderTarget&, sf::RenderStates) const;
 	protected:
 		Component* getTriggered(const sf::Event&);
 };
@@ -38,6 +39,8 @@ Menu::Menu(std::string title) {
 	this->title.setString(title);
 	this->title.setColor(Utility::Random::getRandomColor());
 	this->title.setCharacterSize(40);
+
+	this->active = true;
 }
 
 Menu::~Menu(void) {

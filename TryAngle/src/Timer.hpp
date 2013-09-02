@@ -56,6 +56,8 @@ template <typename T> Timer::Timer(sf::Time (*format)(T e), T dt,
 		Timer::add(this);
 }
 
+Timer::~Timer(void) {};
+
 bool Timer::isActive() const {return this->active;}
 void Timer::setActive(bool active) {this->active = active;}
 
@@ -87,10 +89,6 @@ namespace TimerUtility {
 }
 
 void Timer::onUpdate(const sf::Time& dt) {
-	Timer::timers.erase(std::remove_if(
-			Timer::timers.begin(), Timer::timers.end(),
-			TimerUtility::notActive), Timer::timers.end());
-
 	for(auto it = Timer::timers.begin();it!=Timer::timers.end();++it)
 		if((*it)->active)
 			(*it)->update(dt);

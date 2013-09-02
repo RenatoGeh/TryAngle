@@ -15,7 +15,6 @@
 
 class Button : public Component {
 	private:
-		static const sf::Font* FONT;
 		static const double MAX_ANGLE;
 	private:
 		sf::Color* color;
@@ -48,11 +47,8 @@ class Button : public Component {
 		bool onEvent(const sf::Event&);
 		void update(const sf::Time&);
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
-	public:
-		static void onCleanup(void) {delete Button::FONT;}
 };
 
-sf::Font* Button::FONT = nullptr;
 double Button::MAX_ANGLE = math::PI/6;
 
 Button::Button(double x, double y, std::string title) :
@@ -73,13 +69,8 @@ Button::Button(double x, double y, std::string title) :
 	shape[2].position = sf::Vector2<float>(x+150, y+150);
 	shape[3].position = sf::Vector2<float>(x, y+150);
 
-	if(Button::FONT == nullptr) {
-		Button::FONT = new sf::Font();
-		Button::FONT->loadFromFile("src/resources/fonts/abduction2002.ttf");
-	}
-
 	label.setColor(*invColor);
-	label.setFont(*Button::FONT);
+	label.setFont(Settings::DEF_FONT);
 	label.setCharacterSize(30);
 	label.setString(title);
 
