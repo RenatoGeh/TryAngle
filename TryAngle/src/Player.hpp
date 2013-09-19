@@ -13,6 +13,7 @@
 #include <string>
 #include "Entity.hpp"
 #include "Vector2D.hpp"
+#include "DeathMenu.hpp"
 
 class Player : public Entity {
 	private:
@@ -75,9 +76,9 @@ void Player::update(const sf::Time& dt) {
 	Entity::update(dt);
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		this->angle += math::PI/60;
+		this->angle += (dt.asMilliseconds()/10)*math::PI/60;
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		this->angle -= math::PI/60;
+		this->angle -= (dt.asMilliseconds()/10)*math::PI/60;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		this->speed->y = -2.5;
@@ -145,7 +146,13 @@ void Player::subLevel(unsigned short int decrement = 1) {
 }
 
 bool Player::handleDeath(void) {
-	return this->isDead();
+	if(this->isDead()) {
+		std::cout << "Initializing Menu!" << std::endl;
+		Settings::pause();
+		MenuUtils::setMenu(DeathMenu::generate());
+		return true;
+	}
+	return false;
 }
 
 unsigned short int Player::getLevel(void) {return this->level;}

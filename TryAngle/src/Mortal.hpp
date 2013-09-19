@@ -13,6 +13,7 @@ class Mortal {
 		static const double MAX_HEALTH;
 		static const double MAX_EXP;
 	protected:
+		bool dead = false;
 		double health = 100;
 		double exp = 0;
 	public:

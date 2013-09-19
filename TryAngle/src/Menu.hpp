@@ -31,6 +31,7 @@ class Menu : public sf::Drawable {
 		virtual void onEvent(const sf::Event&) = 0;
 		virtual void update(const sf::Time&);
 		virtual void draw(sf::RenderTarget&, sf::RenderStates) const;
+		virtual void destroy(void);
 	protected:
 		Component* getTriggered(const sf::Event&);
 };
@@ -86,6 +87,12 @@ void Menu::clear(void) {
 		delete components.back();
 		components.pop_back();
 	}
+}
+
+void Menu::destroy(void) {this->active = false;}
+
+namespace MenuUtils {
+	void setMenu(Menu*);
 }
 
 #endif

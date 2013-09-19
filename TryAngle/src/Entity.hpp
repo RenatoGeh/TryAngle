@@ -216,10 +216,10 @@ void Entity::setColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
 }
 
 void Entity::update(const sf::Time& dt) {
-	if(this->handleDeath())
-		return;
+	if(dead) return;
+	else dead = handleDeath();
 
-	position->add(speed);
+	position->add(50*dt.asSeconds()*speed->x, 50*dt.asSeconds()*speed->y);
 	this->setPosition(position->x, position->y);
 	this->setRotation(-180*angle/math::PI);
 }

@@ -69,9 +69,10 @@ void Path::update(const sf::Time& dt) {
 
 	if(this->current->distSq(x, y) < 25) {
 		this->navpts.pop();
+
 		this->current = this->navpts.empty()?nullptr:&(this->navpts.front());
 
-		if(current==NULL)
+		if(current==nullptr)
 			this->parent->setSpeed(0, 0);
 		else
 			this->parent->moveTo(this->current->x, this->current->y);
@@ -80,8 +81,8 @@ void Path::update(const sf::Time& dt) {
 
 void Path::push(double x, double y) {
 	if(this->navpts.empty()) {
-		this->current = new Vector2D(x, y);
-		this->navpts.push(*(this->current));
+		this->navpts.push(Vector2D(x, y));
+		this->current = &(navpts.back());
 		this->parent->moveTo(x, y);
 		return;
 	}

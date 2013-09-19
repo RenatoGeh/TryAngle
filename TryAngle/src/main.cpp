@@ -15,12 +15,21 @@ namespace Settings {
 	static_block(defFont) {
 		DEF_FONT.loadFromFile("src/resources/fonts/abduction2002.ttf");
 	}
+
+	/* Have to be overriden. THAT IS SO UGLY CODING. */
+	void terminate(void);
+	void pause(void);
+	void restart(void);
 }
 
 #include "GameFrame.hpp"
 
 int main() {
-	GameFrame app("F*CK THEM BALLS!!1", 800, 600);
+	GameFrame* app = GameFrame::getInstance("I HAVE THE POWER");
 
-	return app.onExecute();
+	int state = app->onExecute();
+
+	delete app;
+
+	return state;
 }

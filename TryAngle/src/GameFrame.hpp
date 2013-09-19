@@ -30,14 +30,15 @@ class GameFrame {
 		sf::Clock* thread;
 
 		bool debug_mode;
+		bool paused;
 	private:
-		Enemy* pet;
 		sf::Text* debug;
 		sf::Text* fps;
 		ActionTimer<void(void)>* spawner;
 		Menu* menu;
-	public:
+	private:
 		GameFrame(std::string, unsigned short int, unsigned short int);
+	public:
 		~GameFrame();
 	public:
 		bool onInit(void);
@@ -46,6 +47,15 @@ class GameFrame {
 		void onRender(void);
 		void onUpdate(const sf::Time&);
 		int onCleanup(void);
+	public:
+		void restart(void);
+		void terminate(void);
+		void pause(void);
+	public:
+		void setMenu(Menu*);
+	public:
+		static GameFrame* getInstance(void);
+		static GameFrame* getInstance(std::string, unsigned short int, unsigned short int);
 	private:
 		static std::ostringstream convert_stream;
 	public:
@@ -54,20 +64,19 @@ class GameFrame {
 
 std::ostringstream GameFrame::convert_stream;
 
-GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short int height) {
+GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short int height) :
+	title("A Window With Style."), debug_mode(false), paused(false) {
 	this->title = title;
 	this->window = new sf::RenderWindow(sf::VideoMode(width, height),
 			this->title, sf::Style::Close, sf::ContextSettings(0, 0, 8));
 	this->thread = new sf::Clock();
 
 	this->window->setVerticalSyncEnabled(true);
-	this->debug_mode = true;
 
 	Settings::Width = width;
 	Settings::Height = height;
 
 	this->debug = nullptr;
-	this->pet = nullptr;
 	this->fps = nullptr;
 	this->spawner = nullptr;
 	this->menu = nullptr;
@@ -77,8 +86,10 @@ GameFrame::~GameFrame() {
 	delete debug;
 	delete window;
 	delete spawner;
-	delete menu;
 	delete fps;
+
+	if(menu != nullptr)
+		delete menu;
 }
 
 bool GameFrame::onInit() {
@@ -106,11 +117,10 @@ bool GameFrame::onInit() {
 	this->spawner = new ActionTimer<void(void)>(sf::seconds, 10.0f,
 			true, 0.0f, Utility::Spawn::enemy, true, false);
 
-	this->pet = new Enemy(100, 100);
-	Entity::add(this->pet);
-
 	return true;
 }
+
+double scale = 1;
 
 int GameFrame::onExecute() {
 	if(!this->onInit())
@@ -119,7 +129,7 @@ int GameFrame::onExecute() {
 	this->thread->restart();
 	while(window->isOpen()) {
 		this->onEvent();
-		this->onUpdate(this->thread->restart());
+		this->onUpdate((float)scale*this->thread->restart());
 		this->onRender();
 	}
 
@@ -148,6 +158,10 @@ void GameFrame::onEvent() {
 		} else if(event.type == sf::Event::KeyReleased) {
 			if(event.key.code == sf::Keyboard::F1)
 				this->debug_mode = !this->debug_mode;
+			else if(event.key.code == sf::Keyboard::P)
+				this->paused = !this->paused;
+			else if(event.key.code == sf::Keyboard::Delete)
+				Player::getPlayer()->damage(150);
 		}
 
 		Player::getPlayer()->onEvent(event);
@@ -176,6 +190,10 @@ void GameFrame::onRender() {
 
 void GameFrame::onUpdate(const sf::Time& dt) {
 	//TODO: Updating
+	if(this->paused) return;
+
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) scale+=0.01;
+	else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) scale-=0.01;
 
 	if(menu != nullptr)
 		menu->update(dt);
@@ -193,8 +211,10 @@ void GameFrame::onUpdate(const sf::Time& dt) {
 				+ "\nEntities: " + toString(Entity::getEntities()->size())
 				+ "\nPaintables: " + toString(Entity::getPaintables()->size())
 				+ "\nPlayer's Health: " + toString(Player::getPlayer()->getHealth())
-				+ "\nPlayer's Experience: " + toString(Player::getPlayer()->getExp()));
-		fps->setString(toString(1/dt.asSeconds()));
+				+ "\nPlayer's Experience: " + toString(Player::getPlayer()->getExp())
+				+ "\nPlayer's Level: " + toString(Player::getPlayer()->getLevel())
+				+ "\nTime Scale: " + toString(scale));
+		fps->setString(toString((1/dt.asSeconds())*scale));
 	}
 }
 
@@ -212,12 +232,56 @@ int GameFrame::onCleanup() {
 	return EXIT_SUCCESS;
 }
 
+namespace Settings {
+	void terminate(void) {GameFrame::getInstance()->terminate();}
+	void pause(void) {GameFrame::getInstance()->pause();}
+	void restart(void) {GameFrame::getInstance()->restart();}
+}
+
+void GameFrame::terminate(void) {this->window->close();}
+void GameFrame::pause(void) {this->paused = !this->paused;}
+
+void GameFrame::restart(void) {
+	Entity::clear();
+	UserInterface::onCleanup();
+
+	std::vector<Timer*>* timers = Timer::getTimers();
+
+	timers->erase(std::remove_if(timers->begin(), timers->end(),
+			[&](Timer* t)->bool{return t!=this->spawner;}), timers->end());
+
+	Player::setPlayer(new Player("Your mom",
+			Settings::Width/2-30, Settings::Height/2-30, 30));
+}
+
+namespace MenuUtils {
+	void setMenu(Menu* menu=nullptr) {
+		GameFrame::getInstance()->setMenu(menu);
+	}
+}
+
+void GameFrame::setMenu(Menu* m) {
+	delete menu;
+	menu = m;
+}
+
 template <typename T> std::string GameFrame::toString(T e) {
 	convert_stream << e;
 	std::string cpy (convert_stream.str());
 	convert_stream.str("");
 	convert_stream.clear();
 	return cpy;
+}
+
+static GameFrame* instance = nullptr;
+
+GameFrame* GameFrame::getInstance(void) {return instance;}
+GameFrame* GameFrame::getInstance(std::string title,
+		unsigned short int width=800, unsigned short int height=600) {
+	if(instance == nullptr)
+		instance = new GameFrame(title, width, height);
+
+	return instance;
 }
 
 #endif

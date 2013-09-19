@@ -38,6 +38,7 @@ class Timer {
 		static void onUpdate(const sf::Time&);
 		static void onCleanup(void);
 		static void refresh(void);
+		static std::vector<Timer*>* getTimers(void);
 };
 
 std::vector<Timer*> Timer::timers;
@@ -110,6 +111,8 @@ void Timer::onCleanup(void) {
 		timers.pop_back();
 	}
 }
+
+std::vector<Timer*>* Timer::getTimers(void) {return &Timer::timers;}
 
 /**********************ACTION_TIMER****************************/
 
