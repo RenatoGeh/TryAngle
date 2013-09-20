@@ -13,10 +13,11 @@ class Mortal {
 		static const double MAX_HEALTH;
 		static const double MAX_EXP;
 	protected:
-		bool dead = false;
-		double health = 100;
-		double exp = 0;
+		double health;
+		double exp;
+		bool dead;
 	public:
+		Mortal(void);
 		virtual ~Mortal(void) {};
 	public:
 		double getHealth(void) const;
@@ -28,15 +29,17 @@ class Mortal {
 		void addExp(double);
 		void subExp(double);
 	public:
-		void damage(double);
-		void heal(double);
+		virtual void damage(double);
+		virtual void heal(double);
 		virtual bool handleDeath(void) = 0;
 
 	friend class UserInterface;
 };
 
-const double Mortal::MAX_HEALTH = 800;
+const double Mortal::MAX_HEALTH = 200;
 const double Mortal::MAX_EXP = 500;
+
+Mortal::Mortal(void) : health(100), exp(0), dead(false) {};
 
 double Mortal::getHealth(void) const {return this->health;}
 void Mortal::setHealth(double health) {

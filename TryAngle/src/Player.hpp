@@ -14,6 +14,7 @@
 #include "Entity.hpp"
 #include "Vector2D.hpp"
 #include "DeathMenu.hpp"
+#include "Shield.hpp"
 
 class Player : public Entity {
 	private:
@@ -21,6 +22,8 @@ class Player : public Entity {
 	public:
 		static Player* getPlayer(void);
 		static void setPlayer(Player*);
+	private:
+		Shield shield;
 	protected:
 		sf::CircleShape* shape;
 	public:
@@ -31,6 +34,10 @@ class Player : public Entity {
 		void addLevel(unsigned short int);
 		void subLevel(unsigned short int);
 		unsigned short int getLevel(void);
+	public:
+		Shield& getShield(void);
+	public:
+		virtual void damage(double);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(const sf::Time&);
@@ -44,7 +51,7 @@ class Player : public Entity {
 Player* Player::def_player = nullptr;
 
 Player::Player(std::string name, double x, double y, double r) :
-		Entity(name, x, y, 2*r, 2*r) {
+		Entity(name, x, y, 2*r, 2*r), shield(this) {
 	this->shape = new sf::CircleShape(r);
 	this->color = new sf::Color(0, 0, 255);
 	this->team = true;
@@ -59,7 +66,7 @@ Player::Player(std::string name, double x, double y, double r) :
 	this->setOrigin(r, r);
 
 	this->level = 0;
-	this->setHealth(500);
+	this->setHealth(50);
 	this->setExp(100);
 }
 
@@ -70,15 +77,18 @@ Player::~Player() {
 void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	states.transform = getTransform();
 	target.draw(*shape, states);
+	target.draw(shield, states);
 }
 
 void Player::update(const sf::Time& dt) {
 	Entity::update(dt);
 
+	shield.update(dt);
+
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		this->angle += (dt.asMilliseconds()/10)*math::PI/60;
+		this->angle += (dt.asMilliseconds()/10.)*math::PI/60;
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		this->angle -= (dt.asMilliseconds()/10)*math::PI/60;
+		this->angle -= (dt.asMilliseconds()/10.)*math::PI/60;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		this->speed->y = -2.5;
@@ -101,9 +111,6 @@ void Player::update(const sf::Time& dt) {
 		speed->y = 0;
 	else if(position->y > Settings::Height && speed->y > 0)
 		speed->y = 0;
-
-	this->damage(dt.asSeconds()*5);
-	this->subExp(dt.asSeconds()*2.5);
 }
 
 bool Player::onEvent(const sf::Event& event) {
@@ -145,15 +152,18 @@ void Player::subLevel(unsigned short int decrement = 1) {
 	}
 }
 
+Shield& Player::getShield(void) {return shield;}
+
 bool Player::handleDeath(void) {
 	if(this->isDead()) {
-		std::cout << "Initializing Menu!" << std::endl;
 		Settings::pause();
 		MenuUtils::setMenu(DeathMenu::generate());
 		return true;
 	}
 	return false;
 }
+
+void Player::damage(double dam) {shield.damage(dam);}
 
 unsigned short int Player::getLevel(void) {return this->level;}
 

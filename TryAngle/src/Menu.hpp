@@ -37,9 +37,15 @@ class Menu : public sf::Drawable {
 };
 
 Menu::Menu(std::string title) {
+	this->title.setFont(Settings::DEF_FONT);
 	this->title.setString(title);
-	this->title.setColor(Utility::Random::getRandomColor());
-	this->title.setCharacterSize(40);
+	this->title.setColor(sf::Color::Red);
+	this->title.setCharacterSize(50);
+
+	sf::FloatRect titleBounds(this->title.getLocalBounds());
+
+	this->title.setOrigin(0, 0);
+	this->title.setPosition((Settings::Width-titleBounds.width)/2, 80);
 
 	this->active = true;
 }

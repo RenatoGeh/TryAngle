@@ -95,7 +95,7 @@ void Enemy::update(const sf::Time& dt) {
 		Timer::add(this->shooter);
 	}
 
-	this->angle += (dt.asMilliseconds()/10)*double(this->clockwise)/25;
+	this->angle += (dt.asMilliseconds()/10.)*double(this->clockwise)/25;
 
 	if(!wasInside)
 		if(position->x > 0 && position->x < Settings::Width &&

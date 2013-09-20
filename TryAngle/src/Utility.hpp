@@ -87,6 +87,8 @@ namespace Utility {
 			private:
 				sf::Color* palette;
 
+				double scale;
+
 				short int sign_r;
 				short int sign_g;
 				short int sign_b;
@@ -96,12 +98,15 @@ namespace Utility {
 			private:
 				inline static void modulo(sf::Uint8, short int&);
 			public:
+				void setSpeed(double);
+			public:
 				sf::Color& nextColor(void);
 		};
 
 		Pattern::Pattern(sf::Uint8 r = Random::getUnsignedRandom(0, 256),
 				sf::Uint8 g = Random::getUnsignedRandom(0, 256),
-				sf::Uint8 b = Random::getUnsignedRandom(0, 256)) {
+				sf::Uint8 b = Random::getUnsignedRandom(0, 256)) :
+					scale(1) {
 
 			this->palette = new sf::Color(r, g, b);
 
@@ -118,14 +123,16 @@ namespace Utility {
 			if(comp + sign > 255 || comp + sign < 0) sign = -sign;
 		}
 
+		void Pattern::setSpeed(double scale) {this->scale = scale;}
+
 		sf::Color& Pattern::nextColor(void) {
 			Pattern::modulo(palette->r, sign_r);
 			Pattern::modulo(palette->g, sign_g);
 			Pattern::modulo(palette->b, sign_b);
 
-			palette->r += sign_r;
-			palette->g += sign_g;
-			palette->b += sign_b;
+			palette->r += double(sign_r)*scale;
+			palette->g += double(sign_g)*scale;
+			palette->b += double(sign_b)*scale;
 
 			return *palette;
 		}

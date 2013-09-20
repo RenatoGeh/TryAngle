@@ -31,6 +31,8 @@ class GameFrame {
 
 		bool debug_mode;
 		bool paused;
+
+		float scale;
 	private:
 		sf::Text* debug;
 		sf::Text* fps;
@@ -65,7 +67,8 @@ class GameFrame {
 std::ostringstream GameFrame::convert_stream;
 
 GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short int height) :
-	title("A Window With Style."), debug_mode(false), paused(false) {
+	title("A Window With Style."), debug_mode(false), paused(false),
+	scale(1) {
 	this->title = title;
 	this->window = new sf::RenderWindow(sf::VideoMode(width, height),
 			this->title, sf::Style::Close, sf::ContextSettings(0, 0, 8));
@@ -120,8 +123,6 @@ bool GameFrame::onInit() {
 	return true;
 }
 
-double scale = 1;
-
 int GameFrame::onExecute() {
 	if(!this->onInit())
 		return -1;
@@ -129,7 +130,7 @@ int GameFrame::onExecute() {
 	this->thread->restart();
 	while(window->isOpen()) {
 		this->onEvent();
-		this->onUpdate((float)scale*this->thread->restart());
+		this->onUpdate(scale*this->thread->restart());
 		this->onRender();
 	}
 
@@ -242,16 +243,25 @@ void GameFrame::terminate(void) {this->window->close();}
 void GameFrame::pause(void) {this->paused = !this->paused;}
 
 void GameFrame::restart(void) {
-	Entity::clear();
+	Background::onCleanup();
 	UserInterface::onCleanup();
+	Timer::clear();
+	Timer::onCleanup();
 
-	std::vector<Timer*>* timers = Timer::getTimers();
+	Player::getPlayer()->destroy();
 
-	timers->erase(std::remove_if(timers->begin(), timers->end(),
-			[&](Timer* t)->bool{return t!=this->spawner;}), timers->end());
+	Entity::clear();
 
 	Player::setPlayer(new Player("Your mom",
 			Settings::Width/2-30, Settings::Height/2-30, 30));
+	Background::onInit();
+
+	this->spawner = new ActionTimer<void(void)>(sf::seconds, 10.0f,
+			true, 0.0f, Utility::Spawn::enemy, true, false);
+
+	this->setMenu(nullptr);
+
+	this->pause();
 }
 
 namespace MenuUtils {

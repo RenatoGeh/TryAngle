@@ -21,12 +21,15 @@ class UserInterface : public sf::Drawable {
 
 		Vector2D lifeSize;
 		Vector2D expSize;
+		Vector2D shieldSize;
 
 		sf::RectangleShape* life_shape;
+		sf::RectangleShape* shield_shape;
 		sf::RectangleShape* exp_shape;
 
 		double* exp;
 		double* life;
+		double& shield;
 	public:
 		UserInterface(Player*);
 		~UserInterface(void);
@@ -42,23 +45,31 @@ class UserInterface : public sf::Drawable {
 
 UserInterface* UserInterface::ui = nullptr;
 
-UserInterface::UserInterface(Player* parent) {
+UserInterface::UserInterface(Player* parent) :
+		shield(parent->getShield().getShield()) {
 	this->player = parent;
 
 	this->expSize = Vector2D(Settings::Width-80, 5);
-	this->exp_shape = new sf::RectangleShape(lifeSize);
+	this->exp_shape = new sf::RectangleShape(expSize);
 	this->exp_shape->setOutlineColor(sf::Color::Black);
 	this->exp_shape->setOutlineThickness(1.5);
 	this->exp_shape->setFillColor(sf::Color(0, 170, 170));
 
 	this->lifeSize = Vector2D(5, Settings::Height-80);
-	this->life_shape = new sf::RectangleShape(expSize);
+	this->life_shape = new sf::RectangleShape(lifeSize);
 	this->life_shape->setOutlineColor(sf::Color::Black);
 	this->life_shape->setOutlineThickness(1.5);
 	this->life_shape->setFillColor(sf::Color(0, 180, 0));
 
+	this->shieldSize = Vector2D(5, Settings::Height-80);
+	this->shield_shape = new sf::RectangleShape(shieldSize);
+	this->shield_shape->setOutlineColor(sf::Color::Black);
+	this->shield_shape->setOutlineThickness(1.5);
+	this->shield_shape->setFillColor(sf::Color(0, 0, 250));
+
 	this->exp_shape->setPosition(40, Settings::Height-40);
 	this->life_shape->setPosition(20, 40);
+	this->shield_shape->setPosition(35, 40);
 
 	this->life = &(parent->health);
 	this->exp = &(parent->exp);
@@ -67,6 +78,7 @@ UserInterface::UserInterface(Player* parent) {
 UserInterface::~UserInterface(void) {
 	delete life_shape;
 	delete exp_shape;
+	delete shield_shape;
 }
 
 void UserInterface::update(const sf::Time& dt) {
@@ -74,19 +86,25 @@ void UserInterface::update(const sf::Time& dt) {
 			(Settings::Width-75)*(*exp)/Mortal::MAX_EXP, 7.5);
 	this->lifeSize.set(
 			7.5, (Settings::Height-80)*(*life)/Mortal::MAX_HEALTH);
+	this->shieldSize.set(
+			7.5, (Settings::Height-80)*shield/Shield::MAX_SHIELD);
 
 	this->exp_shape->setSize(expSize);
 	this->life_shape->setSize(lifeSize);
+	this->shield_shape->setSize(shieldSize);
 
-	double delta = (Settings::Height-80) - lifeSize.y;
 	sf::Vector2<float> pos = this->life_shape->getPosition();
 
-	this->life_shape->setPosition(pos.x, delta - 50);
+	this->life_shape->setPosition(pos.x,
+			(Settings::Height-80) - lifeSize.y - 50);
+	this->shield_shape->setPosition(shield_shape->getPosition().x,
+			(Settings::Height-80) - shieldSize.y - 50);
 }
 
 void UserInterface::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(*life_shape, states);
 	target.draw(*exp_shape, states);
+	target.draw(*shield_shape, states);
 }
 
 void UserInterface::bind(Player* p) {
@@ -102,6 +120,9 @@ void UserInterface::onRender(sf::RenderWindow *window) {
 	window->draw(*UserInterface::ui);
 }
 
-void UserInterface::onCleanup(void) {delete UserInterface::ui;}
+void UserInterface::onCleanup(void) {
+	delete UserInterface::ui;
+	UserInterface::ui = nullptr;
+}
 
 #endif

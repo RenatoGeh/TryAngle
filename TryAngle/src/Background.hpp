@@ -43,8 +43,10 @@ BTile::~BTile(void) {
 }
 
 void BTile::update(const sf::Time& dt) {
-	for(unsigned int i=0;i<this->getVertexCount();++i)
+	for(unsigned int i=0;i<this->getVertexCount();++i) {
+		this->palette.at(i)->setSpeed(dt.asSeconds()*60);
 		this->operator [](i).color = this->palette.at(i)->nextColor();
+	}
 }
 
 class Background : public sf::Drawable {
@@ -113,6 +115,9 @@ void Background::onInit(Player *p = Player::getPlayer()) {
 	if(Background::back == nullptr)
 		Background::back = new Background(p);
 }
-void Background::onCleanup(void) {delete Background::back;}
+void Background::onCleanup(void) {
+	delete Background::back;
+	Background::back = nullptr;
+}
 
 #endif
