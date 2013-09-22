@@ -19,7 +19,7 @@
 #include "Player.hpp"
 #include "Enemy.hpp"
 #include "Background.hpp"
-#include "Menu.hpp"
+#include "MainMenu.hpp"
 
 class GameFrame {
 	private:
@@ -36,7 +36,6 @@ class GameFrame {
 	private:
 		sf::Text* debug;
 		sf::Text* fps;
-		ActionTimer<void(void)>* spawner;
 		Menu* menu;
 	private:
 		GameFrame(std::string, unsigned short int, unsigned short int);
@@ -53,6 +52,7 @@ class GameFrame {
 		void restart(void);
 		void terminate(void);
 		void pause(void);
+		void start(void);
 	public:
 		void setMenu(Menu*);
 	public:
@@ -81,15 +81,14 @@ GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short
 
 	this->debug = nullptr;
 	this->fps = nullptr;
-	this->spawner = nullptr;
 	this->menu = nullptr;
 }
 
 GameFrame::~GameFrame() {
 	delete debug;
 	delete window;
-	delete spawner;
 	delete fps;
+	delete Utility::Spawn::spawner;
 
 	if(menu != nullptr)
 		delete menu;
@@ -99,13 +98,11 @@ bool GameFrame::onInit() {
 	if(!font.loadFromFile("src/resources/fonts/LTYPE.ttf"))
 		return false;
 
-	Player::setPlayer(new Player("Your mom",
-			Settings::Width/2-30, Settings::Height/2-30, 30));
-
 	Background::onInit();
+	this->setMenu(MainMenu::generate());
 
 	this->debug = new sf::Text();
-	this->debug->setPosition(50, Settings::Height-200);
+	this->debug->setPosition(50, Settings::Height-300);
 	this->debug->setFont(font);
 	this->debug->setCharacterSize(15);
 	this->debug->setColor(sf::Color::Green);
@@ -116,9 +113,6 @@ bool GameFrame::onInit() {
 	this->fps->setCharacterSize(30);
 	this->fps->setColor(sf::Color::Yellow);
 	this->fps->setStyle(sf::Text::Bold);
-
-	this->spawner = new ActionTimer<void(void)>(sf::seconds, 10.0f,
-			true, 0.0f, Utility::Spawn::enemy, true, false);
 
 	return true;
 }
@@ -162,10 +156,12 @@ void GameFrame::onEvent() {
 			else if(event.key.code == sf::Keyboard::P)
 				this->paused = !this->paused;
 			else if(event.key.code == sf::Keyboard::Delete)
-				Player::getPlayer()->damage(150);
+				if(Player::getPlayer()!=nullptr)
+					Player::getPlayer()->damage(150);
 		}
 
-		Player::getPlayer()->onEvent(event);
+		if(Player::getPlayer()!=nullptr)
+			Player::getPlayer()->onEvent(event);
 	}
 }
 
@@ -181,30 +177,30 @@ void GameFrame::onRender() {
 		window->draw(*fps);
 	}
 
+	UserInterface::onRender(window);
+
 	if(menu != nullptr)
 		window->draw(*menu);
-
-	UserInterface::onRender(window);
 
 	window->display();
 }
 
 void GameFrame::onUpdate(const sf::Time& dt) {
 	//TODO: Updating
+	if(menu != nullptr)
+		menu->update(dt);
+
 	if(this->paused) return;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) scale+=0.01;
 	else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) scale-=0.01;
-
-	if(menu != nullptr)
-		menu->update(dt);
 
 	Background::onUpdate(dt);
 	Entity::onUpdate(dt);
 	Timer::onUpdate(dt);
 	UserInterface::onUpdate(dt);
 
-	if(debug_mode) {
+	if(debug_mode && Settings::in_game) {
 		debug->setString("Player's position: [" + toString(Player::getPlayer()->getPosition().x)
 				+ ", " + toString(Player::getPlayer()->getPosition().y) + "]"
 				+ "\nPlayer's speed: " + toString(Player::getPlayer()->getSpeed())
@@ -214,6 +210,7 @@ void GameFrame::onUpdate(const sf::Time& dt) {
 				+ "\nPlayer's Health: " + toString(Player::getPlayer()->getHealth())
 				+ "\nPlayer's Experience: " + toString(Player::getPlayer()->getExp())
 				+ "\nPlayer's Level: " + toString(Player::getPlayer()->getLevel())
+				+ "\nPlayer's Shield: " + toString(Player::getPlayer()->getShield().getShield())
 				+ "\nTime Scale: " + toString(scale));
 		fps->setString(toString((1/dt.asSeconds())*scale));
 	}
@@ -248,7 +245,8 @@ void GameFrame::restart(void) {
 	Timer::clear();
 	Timer::onCleanup();
 
-	Player::getPlayer()->destroy();
+	if(Player::getPlayer() != nullptr)
+		Player::getPlayer()->destroy();
 
 	Entity::clear();
 
@@ -256,12 +254,15 @@ void GameFrame::restart(void) {
 			Settings::Width/2-30, Settings::Height/2-30, 30));
 	Background::onInit();
 
-	this->spawner = new ActionTimer<void(void)>(sf::seconds, 10.0f,
-			true, 0.0f, Utility::Spawn::enemy, true, false);
+	Utility::Spawn::spawner = new ActionTimer<void(void)>(sf::seconds,
+			10.0f, true, 0.0f, Utility::Spawn::enemy, true, false);
 
 	this->setMenu(nullptr);
 
-	this->pause();
+	if(this->paused)
+		this->pause();
+
+	Settings::in_game = true;
 }
 
 namespace MenuUtils {

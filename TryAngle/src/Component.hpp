@@ -40,12 +40,8 @@ class Component : public sf::Drawable {
 
 unsigned long int Component::global_ids = 0;
 
-Component::Component(double x, double y, double w, double h) {
-	this->pos.set(x, y);
-	this->size.set(x, y);
-
-	this->id = Component::nextID();
-}
+Component::Component(double x, double y, double w, double h) :
+		id(Component::nextID()), pos(x, y), size(w, h) {};
 
 Component::~Component(void) {
 	Component::global_ids -= math::pow(2ul, this->id);

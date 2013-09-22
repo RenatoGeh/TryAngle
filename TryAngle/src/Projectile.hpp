@@ -78,7 +78,7 @@ void Projectile::update(const sf::Time& dt) {
 		if(e->getID() != Entity::Type::Projectile) {
 			if(e->getTeam() != this->team)
 				if(e->intersects(this)) {
-					e->damage(10);
+					e->damage(30);
 					if(e->isDead())
 						ProjectileUtility::transferExp(10);
 					this->destroy();

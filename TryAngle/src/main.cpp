@@ -16,6 +16,8 @@ namespace Settings {
 		DEF_FONT.loadFromFile("src/resources/fonts/abduction2002.ttf");
 	}
 
+	bool in_game = false;
+
 	/* Have to be overriden. THAT IS SO UGLY CODING. */
 	void terminate(void);
 	void pause(void);

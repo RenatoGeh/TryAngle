@@ -39,7 +39,7 @@ class UserInterface : public sf::Drawable {
 	public:
 		static void bind(Player*);
 		static void onUpdate(const sf::Time&);
-		static void onRender(sf::RenderWindow*);
+		static void onRender(sf::RenderTarget*);
 		static void onCleanup(void);
 };
 
@@ -85,7 +85,7 @@ void UserInterface::update(const sf::Time& dt) {
 	this->expSize.set(
 			(Settings::Width-75)*(*exp)/Mortal::MAX_EXP, 7.5);
 	this->lifeSize.set(
-			7.5, (Settings::Height-80)*(*life)/Mortal::MAX_HEALTH);
+			7.5, (Settings::Height-80)*((*life<0?0:*life))/Mortal::MAX_HEALTH);
 	this->shieldSize.set(
 			7.5, (Settings::Height-80)*shield/Shield::MAX_SHIELD);
 
@@ -113,11 +113,13 @@ void UserInterface::bind(Player* p) {
 }
 
 void UserInterface::onUpdate(const sf::Time& dt) {
-	UserInterface::ui->update(dt);
+	if(UserInterface::ui != nullptr)
+		UserInterface::ui->update(dt);
 }
 
-void UserInterface::onRender(sf::RenderWindow *window) {
-	window->draw(*UserInterface::ui);
+void UserInterface::onRender(sf::RenderTarget *window) {
+	if(UserInterface::ui != nullptr)
+		window->draw(*UserInterface::ui);
 }
 
 void UserInterface::onCleanup(void) {

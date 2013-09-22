@@ -20,6 +20,7 @@ class Shield : public sf::Drawable {
 		double shield;
 		double rate;
 		double mitigation;
+		double fixed;
 
 		sf::CircleShape* shape;
 	public:
@@ -44,7 +45,7 @@ const double Shield::MAX_SHIELD = 75;
 Shield::Shield(Entity* owner_ = nullptr, double shield_ = 25,
 		double mitigation_ = 1.10, double rate_ = .01) :
 		owner(owner_), max_shield(shield_), shield(shield_), rate(rate_),
-		mitigation(mitigation_) {
+		mitigation(mitigation_), fixed(shield_) {
 
 	this->shape = new sf::CircleShape(owner->getSize()->x/2 + 10);
 	this->shape->setPointCount(30);
@@ -60,18 +61,17 @@ Shield::~Shield(void) {
 	delete shape;
 }
 
-double& Shield::getShield(void) {return shield;}
+double& Shield::getShield(void) {return fixed;}
 double& Shield::getMitigation(void) {return mitigation;}
 
-void Shield::setShield(double shield) {this->shield = shield;}
+void Shield::setShield(double shield) {this->shield = this->fixed = shield;}
 void Shield::setMitigation(double mitigation) {
 	this->mitigation = mitigation;
 }
 
 void Shield::damage(double dam) {
 	if(shield < 0) {
-		owner->damage(dam);
-		shield = 0;
+		owner->setHealth(-dam);
 		return;
 	}
 
@@ -81,7 +81,6 @@ void Shield::damage(double dam) {
 	if(shield < 0) {
 		if(owner->getHealth() + shield < 0) owner->setHealth(0);
 		else owner->setHealth(owner->getHealth() + shield);
-		shield = 0;
 	}
 }
 
@@ -89,6 +88,7 @@ void Shield::recharge(double pts) {this->shield += pts;}
 
 void Shield::update(const sf::Time& dt) {
 	if(shield < max_shield) shield += rate;
+	fixed = shield<0?0:shield;
 }
 
 void Shield::draw(sf::RenderTarget& target, sf::RenderStates state) const {

@@ -54,27 +54,23 @@ class Background : public sf::Drawable {
 		static Background* back;
 	private:
 		std::vector<BTile*> tiles;
-		Player* parent;
-		unsigned short int level;
 	public:
-		Background(Player*);
+		Background(void);
 		~Background(void);
 	public:
 		void update(const sf::Time&);
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 	public:
 		static void onUpdate(const sf::Time&);
-		static void onRender(sf::RenderWindow*);
-		static void onInit(Player*);
+		static void onRender(sf::RenderTarget*);
+		static void onInit(void);
 		static void onCleanup(void);
 };
 
 Background* Background::back = nullptr;
 
-Background::Background(Player* p = Player::getPlayer()) {
+Background::Background(void) {
 	this->tiles = std::vector<BTile*>();
-	this->parent = p;
-	this->level = parent->getLevel();
 
 	BTile* tile = new BTile(sf::Quads, 4);
 	(*tile)[0].position = sf::Vector2<float>(0, 0);
@@ -93,11 +89,6 @@ Background::~Background(void) {
 }
 
 void Background::update(const sf::Time& dt) {
-	if(this->level != this->parent->getLevel()) {
-		this->level = this->parent->getLevel();
-		//TODO: Add BTiles.
-	}
-
 	for(auto it = tiles.begin();it!=tiles.end();++it)
 		(*it)->update(dt);
 }
@@ -108,12 +99,12 @@ void Background::draw(sf::RenderTarget& target, sf::RenderStates state) const {
 }
 
 void Background::onUpdate(const sf::Time& dt) {Background::back->update(dt);}
-void Background::onRender(sf::RenderWindow* window) {
+void Background::onRender(sf::RenderTarget* window) {
 	window->draw(*Background::back);
 }
-void Background::onInit(Player *p = Player::getPlayer()) {
+void Background::onInit(void) {
 	if(Background::back == nullptr)
-		Background::back = new Background(p);
+		Background::back = new Background();
 }
 void Background::onCleanup(void) {
 	delete Background::back;

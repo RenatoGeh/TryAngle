@@ -33,13 +33,17 @@ class DeathMenu : public Menu {
 };
 
 const std::string DeathMenu::messages[] = {"Hi. Po. Po. Ta. Mus.",
-		"42", "It is known.", "Hey there sexy.", "You're weak!",
-		"Resistance is futile.", "All your base are belong to us.",
-		"I have no creativity whatsoever."};
+		"42", "It is known.", "Hey there sexy.", "WHY SO MANY COLORS?!",
+		"Is it he or she\n for that in here?", "I am confused.\n Am I dead?",
+		"Can it not here for this there?", "I'm going to tell you a secret.",
+		"Did you know that?\n I didn't.", "Has it been forever since?",
+		"Is this real life? Or just mustache?", "Ribbit.", "Screeech!",
+		"Being yourself is nothing\n more than being others.",
+		"Have I ever been in here?\n I feel like I have."};
 
 DeathMenu::DeathMenu(void) : Menu("THE END"),
 		board(sf::Vector2<float>(Settings::Width, Settings::Height)) {
-	respawn.setCharacterSize(20);
+	respawn.setCharacterSize(25);
 	respawn.setFont(Settings::DEF_FONT);
 	respawn.setColor(sf::Color::Red);
 	respawn.setString("To respawn press 'R'.\nTo quit press 'Q'.");
@@ -48,7 +52,7 @@ DeathMenu::DeathMenu(void) : Menu("THE END"),
 	respawn.setPosition(Settings::Width - respawnBounds.width - 50,
 			Settings::Height - respawnBounds.height - 100);
 
-	message.setCharacterSize(20);
+	message.setCharacterSize(30);
 	message.setFont(Settings::DEF_FONT);
 	message.setColor(sf::Color::Red);
 	message.setString(DeathMenu::getMessage());
@@ -69,6 +73,8 @@ void DeathMenu::onEvent(const sf::Event& event) {
 			Settings::restart();
 		} else if(event.key.code == sf::Keyboard::Q) {
 			Settings::terminate();
+		} else if(event.key.code == sf::Keyboard::P) {
+			Settings::pause();
 		}
 	}
 }

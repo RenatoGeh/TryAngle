@@ -40,12 +40,12 @@ Menu::Menu(std::string title) {
 	this->title.setFont(Settings::DEF_FONT);
 	this->title.setString(title);
 	this->title.setColor(sf::Color::Red);
-	this->title.setCharacterSize(50);
+	this->title.setCharacterSize(50*title.size()>Settings::Width?30:50);
 
 	sf::FloatRect titleBounds(this->title.getLocalBounds());
 
 	this->title.setOrigin(0, 0);
-	this->title.setPosition((Settings::Width-titleBounds.width)/2, 80);
+	this->title.setPosition((Settings::Width-titleBounds.width)/2, 50);
 
 	this->active = true;
 }

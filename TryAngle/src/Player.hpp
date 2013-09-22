@@ -67,7 +67,6 @@ Player::Player(std::string name, double x, double y, double r) :
 
 	this->level = 0;
 	this->setHealth(50);
-	this->setExp(100);
 }
 
 Player::~Player() {

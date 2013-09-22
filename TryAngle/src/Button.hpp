@@ -19,7 +19,6 @@ class Button : public Component {
 	private:
 		sf::Color* color;
 		sf::Color* invColor;
-		sf::VertexArray shape;
 		sf::Text label;
 
 		/** State: button state
@@ -31,6 +30,7 @@ class Button : public Component {
 		bool hover;
 
 		double angle;
+		bool clockwise;
 	public:
 		Button(double, double, std::string);
 		~Button(void);
@@ -49,25 +49,17 @@ class Button : public Component {
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 };
 
-double Button::MAX_ANGLE = math::PI/6;
+const double Button::MAX_ANGLE = 10;
 
 Button::Button(double x, double y, std::string title) :
-		Component(x, y, 150, 150), shape(sf::Quads, 4) {
+		Component(x, y, 0, 0), state(false), hover(false),
+		angle(0), clockwise(Utility::Random::getRandomBool()) {
 
 	color = new sf::Color;
 	invColor = new sf::Color;
 
 	*color = Utility::Random::getRandomColor();
 	*invColor = Utility::Random::getInverseColor(*color);
-
-	angle = 0;
-	state = false;
-	hover = false;
-
-	shape[0].position = sf::Vector2<float>(x, y);
-	shape[1].position = sf::Vector2<float>(x+150, y);
-	shape[2].position = sf::Vector2<float>(x+150, y+150);
-	shape[3].position = sf::Vector2<float>(x, y+150);
 
 	label.setColor(*invColor);
 	label.setFont(Settings::DEF_FONT);
@@ -76,11 +68,10 @@ Button::Button(double x, double y, std::string title) :
 
 	sf::FloatRect bounds = label.getLocalBounds();
 
-	label.setPosition(
-			(float)pos.x + (bounds.width*title.size()-size.x)/2,
-			(float)pos.y + bounds.height/2);
-
 	label.setOrigin(bounds.width/2, bounds.height/2);
+	label.setPosition(pos.x, pos.y);
+
+	this->size.set(bounds.width, bounds.height);
 
 	this->refresh();
 }
@@ -91,14 +82,12 @@ Button::~Button(void) {
 }
 
 void Button::refresh(void) {
-	for(int i=0;i<4;i++)
-		shape[i].color = *color;
 	label.setColor(*invColor);
 }
 
 bool Button::isInside(double x, double y) {
-	return (x>this->pos.x && x<(this->pos.x+this->size.x)) &&
-			(y>this->pos.y && y<(this->pos.y+this->size.y));
+	return (x>(this->pos.x-this->size.x/2) && x<(this->pos.x+this->size.x/2)) &&
+			(y>(this->pos.y-this->size.y/2) && y<(this->pos.y+this->size.y/2));
 }
 
 bool Button::onEvent(const sf::Event& event) {
@@ -121,6 +110,12 @@ bool Button::onEvent(const sf::Event& event) {
 			this->swap();
 			this->refresh();
 			this->hover = in;
+
+			if(!hover) {
+				angle = 0;
+				label.setRotation(0);
+				clockwise = Utility::Random::getRandomBool();
+			}
 		}
 	}
 
@@ -128,23 +123,20 @@ bool Button::onEvent(const sf::Event& event) {
 }
 
 void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-	target.draw(shape, states);
 	target.draw(label, states);
 }
 
 void Button::update(const sf::Time& dt) {
-	if(!hover) {
-		angle = 0;
-		label.setRotation(0);
-		return;
-	}
+	if(!hover) return;
 
-	double theta =
-			angle>Button::MAX_ANGLE?5*dt.asSeconds():-5*dt.asSeconds();
+	if(math::abs(angle)>Button::MAX_ANGLE) {
+		angle = math::signum(angle)*Button::MAX_ANGLE;
+		clockwise = !clockwise;
+	}
+	double theta = clockwise?10*dt.asSeconds():-10*dt.asSeconds();
+
 	label.rotate(theta);
 	this->angle += theta;
-	if(angle > 2*Button::MAX_ANGLE)
-		angle = -Button::MAX_ANGLE;
 }
 
 #endif

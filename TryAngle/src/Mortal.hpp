@@ -43,7 +43,7 @@ Mortal::Mortal(void) : health(100), exp(0), dead(false) {};
 
 double Mortal::getHealth(void) const {return this->health;}
 void Mortal::setHealth(double health) {
-	if(health > MAX_HEALTH || health < 0)
+	if(health > MAX_HEALTH)
 		return;
 	this->health = health;
 }

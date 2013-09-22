@@ -67,7 +67,7 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 
 	this->nav = new Path(this);
 
-	this->setHealth(30);
+	this->setHealth(90);
 }
 
 Enemy::~Enemy() {

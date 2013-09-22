@@ -12,6 +12,7 @@
 #include <iostream>
 #include <ctime>
 #include "Gambs.hpp"
+#include "Timer.hpp"
 
 namespace math {
 	typedef char byte;
@@ -80,6 +81,8 @@ namespace Utility {
 		long int getBoundRandom(long int x1, long int x2, long int x3, long int x4) {
 			return getRandomSign(false)<0?getRandom(x1, x2):getRandom(x3, x4);
 		}
+
+		bool getRandomBool(void) {return getUnsignedRandom(0, 11)%2;}
 	}
 
 	namespace Color {
@@ -139,9 +142,7 @@ namespace Utility {
 	}
 
 	namespace Spawn {
-		//This is a forward declaration of namespace Spawn.
-		//It is implemented accordingly throughout their respective
-		//representatives (i.e. YOUR MOM).
+		ActionTimer<void(void)>* spawner = nullptr;
 	}
 }
 
