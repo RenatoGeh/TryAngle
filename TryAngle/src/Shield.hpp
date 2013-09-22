@@ -71,7 +71,7 @@ void Shield::setMitigation(double mitigation) {
 
 void Shield::damage(double dam) {
 	if(shield < 0) {
-		owner->setHealth(-dam);
+		owner->setHealth(owner->getHealth()-dam);
 		return;
 	}
 

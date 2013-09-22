@@ -66,7 +66,7 @@ Player::Player(std::string name, double x, double y, double r) :
 	this->setOrigin(r, r);
 
 	this->level = 0;
-	this->setHealth(50);
+	this->setHealth(200);
 }
 
 Player::~Player() {

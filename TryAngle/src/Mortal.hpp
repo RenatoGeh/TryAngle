@@ -36,7 +36,7 @@ class Mortal {
 	friend class UserInterface;
 };
 
-const double Mortal::MAX_HEALTH = 200;
+const double Mortal::MAX_HEALTH = 400;
 const double Mortal::MAX_EXP = 500;
 
 Mortal::Mortal(void) : health(100), exp(0), dead(false) {};
