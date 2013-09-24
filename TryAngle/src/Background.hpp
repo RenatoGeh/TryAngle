@@ -69,8 +69,7 @@ class Background : public sf::Drawable {
 
 Background* Background::back = nullptr;
 
-Background::Background(void) {
-	this->tiles = std::vector<BTile*>();
+Background::Background(void) : tiles() {
 
 	BTile* tile = new BTile(sf::Quads, 4);
 	(*tile)[0].position = sf::Vector2<float>(0, 0);

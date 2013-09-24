@@ -11,8 +11,6 @@
 #include "Mortal.hpp"
 
 class Shield : public sf::Drawable {
-	public:
-		static const double MAX_SHIELD;
 	private:
 		Entity* owner;
 
@@ -29,9 +27,11 @@ class Shield : public sf::Drawable {
 	public:
 		double& getShield(void);
 		double& getMitigation(void);
+		double& getMaxShield(void);
 	public:
 		void setShield(double);
 		void setMitigation(double);
+		void setMaxShield(double);
 	public:
 		virtual void damage(double);
 		virtual void recharge(double);
@@ -39,8 +39,6 @@ class Shield : public sf::Drawable {
 		void update(const sf::Time& dt);
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 };
-
-const double Shield::MAX_SHIELD = 75;
 
 Shield::Shield(Entity* owner_ = nullptr, double shield_ = 25,
 		double mitigation_ = 1.10, double rate_ = .01) :
@@ -63,11 +61,13 @@ Shield::~Shield(void) {
 
 double& Shield::getShield(void) {return fixed;}
 double& Shield::getMitigation(void) {return mitigation;}
+double& Shield::getMaxShield(void) {return max_shield;}
 
 void Shield::setShield(double shield) {this->shield = this->fixed = shield;}
 void Shield::setMitigation(double mitigation) {
 	this->mitigation = mitigation;
 }
+void Shield::setMaxShield(double m_shield) {max_shield = m_shield;}
 
 void Shield::damage(double dam) {
 	if(shield < 0) {

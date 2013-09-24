@@ -160,6 +160,8 @@ void GameFrame::onEvent() {
 				if(paused) MenuUtils::setMenu(PauseMenu::generate());
 			} else if(event.key.code == sf::Keyboard::E)
 				Settings::restart();
+			else if(event.key.code == sf::Keyboard::Q)
+				Player::getPlayer()->addExp(150);
 			else if(event.key.code == sf::Keyboard::Delete)
 				if(Player::getPlayer()!=nullptr)
 					Player::getPlayer()->damage(150);

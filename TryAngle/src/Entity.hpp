@@ -34,8 +34,6 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 
 		double angle;
 
-		unsigned short int level;
-
 		std::string name;
 		sf::Color* color;
 	public:
@@ -67,11 +65,6 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 		void setSpeed(double, double);
 		void setColor(sf::Uint8, sf::Uint8, sf::Uint8);
 		void setTeam(bool);
-	public:
-		virtual void setLevel(unsigned short int) {};
-		virtual void addLevel(unsigned short int) {};
-		virtual void subLevel(unsigned short int) {};
-		virtual unsigned short int getLevel(void) {return 0;};
 	public:
 		virtual void update(const sf::Time&);
 		virtual bool intersects(Entity*);
@@ -257,7 +250,7 @@ void Entity::moveTo(double x, double y) {
 void Entity::shoot(void) {
 	double alpha, theta = math::PI-(this->getRotation()*math::PI/180);
 	double r = this->size->x/2;
-	unsigned short int k = 3 + this->level;
+	unsigned short int k = 3 + level;
 
 	for(short int i=0;i<k;i++) {
 		alpha = theta + i*(2*math::PI/k);

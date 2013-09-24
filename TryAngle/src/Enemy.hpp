@@ -33,7 +33,6 @@ class Enemy : public Entity {
 		void setLevel(unsigned short int);
 		void addLevel(unsigned short int);
 		void subLevel(unsigned short int);
-		unsigned short int getLevel(void);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(const sf::Time& dt);
@@ -52,7 +51,7 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 
 	this->shape->setOutlineColor(sf::Color::Black);
 	this->shape->setOutlineThickness(1.5);
-	this->shape->setPointCount(3+Player::getPlayer()->getLevel());
+	this->shape->setPointCount(3+(level=Player::getPlayer()->getLevel()));
 	this->shape->setFillColor(*color);
 
 	this->setOrigin(0, 0);
@@ -129,8 +128,6 @@ void Enemy::subLevel(unsigned short int decrement = 1) {
 		this->shape->setPointCount(3 + this->level);
 	}
 }
-
-unsigned short int Enemy::getLevel(void) {return this->level;}
 
 Entity::Type Enemy::getID(void) {return Entity::Type::Enemy;}
 

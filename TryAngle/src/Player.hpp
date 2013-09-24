@@ -33,7 +33,6 @@ class Player : public Entity {
 		void setLevel(unsigned short int);
 		void addLevel(unsigned short int);
 		void subLevel(unsigned short int);
-		unsigned short int getLevel(void);
 	public:
 		Shield& getShield(void);
 	public:
@@ -66,7 +65,6 @@ Player::Player(std::string name, double x, double y, double r) :
 	this->setOrigin(r, r);
 
 	this->level = 0;
-	this->setHealth(200);
 }
 
 Player::~Player() {
@@ -164,8 +162,6 @@ bool Player::handleDeath(void) {
 }
 
 void Player::damage(double dam) {shield.damage(dam);}
-
-unsigned short int Player::getLevel(void) {return this->level;}
 
 #include "UserInterface.hpp"
 

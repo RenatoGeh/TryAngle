@@ -29,7 +29,12 @@ class UserInterface : public sf::Drawable {
 
 		double* exp;
 		double* life;
+
+		double& max_health;
+		double& max_exp;
+
 		double& shield;
+		double& max_shield;
 	public:
 		UserInterface(Player*);
 		~UserInterface(void);
@@ -46,23 +51,28 @@ class UserInterface : public sf::Drawable {
 UserInterface* UserInterface::ui = nullptr;
 
 UserInterface::UserInterface(Player* parent) :
-		shield(parent->getShield().getShield()) {
-	this->player = parent;
+		player(parent),
+		lifeSize(5, Settings::Height-80),
+		expSize(Settings::Width-80, 5),
+		shieldSize(5, Settings::Height-80),
+		life_shape(new sf::RectangleShape(lifeSize)),
+		shield_shape(new sf::RectangleShape(shieldSize)),
+		exp_shape(new sf::RectangleShape(expSize)),
+		exp(&(parent->exp)),
+		life(&(parent->health)),
+		max_health(parent->max_health),
+		max_exp(parent->max_exp),
+		shield(parent->getShield().getShield()),
+		max_shield(parent->getShield().getMaxShield()) {
 
-	this->expSize = Vector2D(Settings::Width-80, 5);
-	this->exp_shape = new sf::RectangleShape(expSize);
 	this->exp_shape->setOutlineColor(sf::Color::Black);
 	this->exp_shape->setOutlineThickness(1.5);
 	this->exp_shape->setFillColor(sf::Color(0, 170, 170));
 
-	this->lifeSize = Vector2D(5, Settings::Height-80);
-	this->life_shape = new sf::RectangleShape(lifeSize);
 	this->life_shape->setOutlineColor(sf::Color::Black);
 	this->life_shape->setOutlineThickness(1.5);
 	this->life_shape->setFillColor(sf::Color(0, 180, 0));
 
-	this->shieldSize = Vector2D(5, Settings::Height-80);
-	this->shield_shape = new sf::RectangleShape(shieldSize);
 	this->shield_shape->setOutlineColor(sf::Color::Black);
 	this->shield_shape->setOutlineThickness(1.5);
 	this->shield_shape->setFillColor(sf::Color(0, 0, 250));
@@ -70,9 +80,6 @@ UserInterface::UserInterface(Player* parent) :
 	this->exp_shape->setPosition(40, Settings::Height-40);
 	this->life_shape->setPosition(20, 40);
 	this->shield_shape->setPosition(35, 40);
-
-	this->life = &(parent->health);
-	this->exp = &(parent->exp);
 }
 
 UserInterface::~UserInterface(void) {
@@ -83,11 +90,11 @@ UserInterface::~UserInterface(void) {
 
 void UserInterface::update(const sf::Time& dt) {
 	this->expSize.set(
-			(Settings::Width-75)*(*exp)/Mortal::MAX_EXP, 7.5);
+			(Settings::Width-75)*(*exp)/max_exp, 7.5);
 	this->lifeSize.set(
-			7.5, (Settings::Height-80)*((*life<0?0:*life))/Mortal::MAX_HEALTH);
+			7.5, (Settings::Height-80)*((*life<0?0:*life))/(2*max_health));
 	this->shieldSize.set(
-			7.5, (Settings::Height-80)*shield/Shield::MAX_SHIELD);
+			7.5, (Settings::Height-80)*shield/(2*max_shield));
 
 	this->exp_shape->setSize(expSize);
 	this->life_shape->setSize(lifeSize);
