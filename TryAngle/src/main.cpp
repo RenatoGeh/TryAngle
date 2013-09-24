@@ -20,7 +20,9 @@ namespace Settings {
 
 	/* Have to be overriden. THAT IS SO UGLY CODING. */
 	void terminate(void);
+	void clean(void);
 	void pause(void);
+	bool isPaused(void);
 	void restart(void);
 }
 

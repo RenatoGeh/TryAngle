@@ -20,6 +20,7 @@
 #include "Enemy.hpp"
 #include "Background.hpp"
 #include "MainMenu.hpp"
+#include "PauseMenu.hpp"
 
 class GameFrame {
 	private:
@@ -52,6 +53,7 @@ class GameFrame {
 		void restart(void);
 		void terminate(void);
 		void pause(void);
+		bool isPaused(void);
 		void start(void);
 	public:
 		void setMenu(Menu*);
@@ -153,8 +155,11 @@ void GameFrame::onEvent() {
 		} else if(event.type == sf::Event::KeyReleased) {
 			if(event.key.code == sf::Keyboard::F1)
 				this->debug_mode = !this->debug_mode;
-			else if(event.key.code == sf::Keyboard::P)
+			else if(event.key.code == sf::Keyboard::P) {
 				this->paused = !this->paused;
+				if(paused) MenuUtils::setMenu(PauseMenu::generate());
+			} else if(event.key.code == sf::Keyboard::E)
+				Settings::restart();
 			else if(event.key.code == sf::Keyboard::Delete)
 				if(Player::getPlayer()!=nullptr)
 					Player::getPlayer()->damage(150);
@@ -172,7 +177,7 @@ void GameFrame::onRender() {
 
 	Entity::paint(window);
 
-	if(debug_mode) {
+	if(debug_mode && Settings::in_game) {
 		window->draw(*debug);
 		window->draw(*fps);
 	}
@@ -190,6 +195,8 @@ void GameFrame::onUpdate(const sf::Time& dt) {
 	if(menu != nullptr)
 		menu->update(dt);
 
+	Timer::onUpdate(dt);
+
 	if(this->paused) return;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) scale+=0.01;
@@ -197,7 +204,6 @@ void GameFrame::onUpdate(const sf::Time& dt) {
 
 	Background::onUpdate(dt);
 	Entity::onUpdate(dt);
-	Timer::onUpdate(dt);
 	UserInterface::onUpdate(dt);
 
 	if(debug_mode && Settings::in_game) {
@@ -233,11 +239,27 @@ int GameFrame::onCleanup() {
 namespace Settings {
 	void terminate(void) {GameFrame::getInstance()->terminate();}
 	void pause(void) {GameFrame::getInstance()->pause();}
+	bool isPaused(void) {return GameFrame::getInstance()->isPaused();}
 	void restart(void) {GameFrame::getInstance()->restart();}
+	void clean(void) {
+		UserInterface::onCleanup();
+		Timer::clear();
+		Timer::onCleanup();
+
+		if(Player::getPlayer() != nullptr)
+			Player::getPlayer()->destroy();
+
+		Entity::clear();
+
+		MenuUtils::setMenu(nullptr);
+
+		Settings::in_game = false;
+	}
 }
 
 void GameFrame::terminate(void) {this->window->close();}
 void GameFrame::pause(void) {this->paused = !this->paused;}
+bool GameFrame::isPaused(void) {return paused;}
 
 void GameFrame::restart(void) {
 	Background::onCleanup();
@@ -257,7 +279,7 @@ void GameFrame::restart(void) {
 	Utility::Spawn::spawner = new ActionTimer<void(void)>(sf::seconds,
 			10.0f, true, 0.0f, Utility::Spawn::enemy, true, false);
 
-	this->setMenu(nullptr);
+	MenuUtils::setMenu(nullptr);
 
 	if(this->paused)
 		this->pause();

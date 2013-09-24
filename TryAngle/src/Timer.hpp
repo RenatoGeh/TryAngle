@@ -90,6 +90,8 @@ namespace TimerUtility {
 }
 
 void Timer::onUpdate(const sf::Time& dt) {
+	if(Settings::isPaused()) return;
+
 	for(auto it = Timer::timers.begin();it!=Timer::timers.end();++it)
 		if((*it)->active)
 			(*it)->update(dt);
@@ -153,6 +155,34 @@ template<typename Fn> void ActionTimer<Fn>::update(const sf::Time& dt) {
 
 	if(this->action != NULL)
 		this->action();
+}
+
+/********************** UPDATE_TIMER *********************/
+
+template <typename Fn> class UpdateTimer : public Timer {
+	private:
+		std::function<Fn> action;
+	public:
+		UpdateTimer(std::function<Fn>, bool, bool);
+		~UpdateTimer(void);
+	public:
+		void update(const sf::Time&);
+};
+
+template<typename Fn> UpdateTimer<Fn>::~UpdateTimer() {}
+
+template <typename Fn> UpdateTimer<Fn>::UpdateTimer(
+		std::function<Fn> f = nullptr, bool active = false,
+		bool auto_deletion = true) :
+				Timer(sf::seconds, float(0), false, float(0), active,
+						auto_deletion) {
+	this->action = f;
+	if(active) Timer::add(this);
+}
+
+template<typename Fn> void UpdateTimer<Fn>::update(const sf::Time& dt) {
+	this->action();
+	this->active = false;
 }
 
 #endif

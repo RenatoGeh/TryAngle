@@ -264,7 +264,7 @@ void Entity::shoot(void) {
 		Entity::add(new Projectile(this,
 				position->x + r*sin(alpha),
 				position->y + r*cos(alpha),
-				sin(alpha)*7.5, cos(alpha)*7.5));
+				sin(alpha)*12, cos(alpha)*12));
 	}
 }
 

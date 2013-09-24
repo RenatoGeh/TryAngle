@@ -10,13 +10,15 @@
 
 #include "Menu.hpp"
 #include "Button.hpp"
+#include "Background.hpp"
+#include "Timer.hpp"
 
 class MainMenu : public Menu {
 	private:
-		Button play;
-		Button options;
-		Button customize;
-		Button exit;
+		Button* play;
+		Button* options;
+		Button* customize;
+		Button* exit;
 	private:
 		MainMenu(void);
 		virtual ~MainMenu(void);
@@ -35,23 +37,25 @@ const std::string MainMenu::titles[] = {"Jilly Bean", "Blame on the Boogey!",
 	"I Want My MTV", "On The Border of Hell", "Walk of Lifeguards",
 	"Jenni and the Cats", "I Walked", "101 Helium Balloons", "Green Moon",
 	"I Am The Waldo", "Mars Angel", "Da Ya Think I'm Fat", "Enjoy The Noise",
-	"American Cake", "A Horse Called Billy", "Why M See A", "Porkeater",
+	"American Cake", "A Horse With Two Names", "Why M See A", "Porkeater",
 	"Painted Love", "Karma is a Chameleon", "Another One Bites the Crust",
 	"Livin' off a Player", "No Woman No Pie"};
 
 MainMenu::MainMenu(void) : Menu(MainMenu::getTitle()),
-		play(Settings::Width/2, 150, "Play!"),
-		options(Settings::Width/2, 250, "Awpshuns"),
-		customize(Settings::Width/2, 350, "Make me Unique!"),
-		exit(Settings::Width/2, 450, "See you soon!") {
+	play(new Button(Settings::Width/2, 150, "Play!")),
+	options(new Button(Settings::Width/2, 250, "Awpshuns")),
+	customize(new Button(Settings::Width/2, 350, "Make me Unique!")),
+	exit(new Button(Settings::Width/2, 450, "See you soon!")) {
 
-	this->add(&play);
-	this->add(&options);
-	this->add(&customize);
-	this->add(&exit);
+	this->add(play);
+	this->add(options);
+	this->add(customize);
+	this->add(exit);
 };
 
-MainMenu::~MainMenu(void) {Settings::pause();};
+MainMenu::~MainMenu(void) {
+	Settings::pause();
+};
 
 void MainMenu::update(const sf::Time& dt) {
 	Menu::update(dt);
@@ -68,13 +72,13 @@ void MainMenu::onEvent(const sf::Event& event) {
 	if(triggered == nullptr) return;
 	math::u_id id = triggered->getID();
 
-	if(id == play.getID())
+	if(id == play->getID())
 		Settings::restart();
-	else if(id == options.getID())
+	else if(id == options->getID())
 		std::cout << "OPTIONS!" << std::endl;
-	else if(id == customize.getID())
+	else if(id == customize->getID())
 		std::cout << "CUSTOMIZATION!" << std::endl;
-	else if(id == exit.getID())
+	else if(id == exit->getID())
 		Settings::terminate();
 	else
 		std::cerr << "Something went terribly wrong: You!" << std::endl;
@@ -90,6 +94,7 @@ std::string MainMenu::getTitle(void) {
 }
 
 MainMenu* MainMenu::generate(void) {
+	Settings::clean();
 	Settings::pause();
 	return new MainMenu();
 }

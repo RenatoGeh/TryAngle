@@ -71,6 +71,7 @@ Player::Player(std::string name, double x, double y, double r) :
 
 Player::~Player() {
 	delete shape;
+	Player::def_player = nullptr;
 }
 
 void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {

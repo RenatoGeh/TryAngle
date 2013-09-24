@@ -11,7 +11,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include "Utility.hpp"
-#include "Menu.hpp"
+#include "MainMenu.hpp"
 
 class DeathMenu : public Menu {
 	private:
@@ -23,7 +23,6 @@ class DeathMenu : public Menu {
 		~DeathMenu(void);
 	public:
 		void onEvent(const sf::Event&);
-		void update(const sf::Time&);
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 	private:
 		static const std::string messages[];
@@ -39,14 +38,17 @@ const std::string DeathMenu::messages[] = {"Hi. Po. Po. Ta. Mus.",
 		"Did you know that?\n I didn't.", "Has it been forever since?",
 		"Is this real life? Or just mustache?", "Ribbit.", "Screeech!",
 		"Being yourself is nothing\n more than being others.",
-		"Have I ever been in here?\n I feel like I have."};
+		"Have I ever been in here?\n I feel like I have.",
+		"This ain't no PsyChObALL.\nIt's better!",
+		"Here, have a homemade muffin.\nDon't ask what's made of."};
 
 DeathMenu::DeathMenu(void) : Menu("THE END"),
 		board(sf::Vector2<float>(Settings::Width, Settings::Height)) {
 	respawn.setCharacterSize(25);
 	respawn.setFont(Settings::DEF_FONT);
 	respawn.setColor(sf::Color::Red);
-	respawn.setString("To respawn press 'R'.\nTo quit press 'Q'.");
+	respawn.setString("To respawn press 'R'.\nTo quit press 'Q'.\n"
+			"To go to the main screen press 'M'.");
 
 	sf::FloatRect respawnBounds(respawn.getLocalBounds());
 	respawn.setPosition(Settings::Width - respawnBounds.width - 50,
@@ -69,18 +71,15 @@ DeathMenu::~DeathMenu(void) {}
 
 void DeathMenu::onEvent(const sf::Event& event) {
 	if(event.type == sf::Event::KeyReleased) {
-		if(event.key.code == sf::Keyboard::R) {
+		if(event.key.code == sf::Keyboard::R)
 			Settings::restart();
-		} else if(event.key.code == sf::Keyboard::Q) {
+		else if(event.key.code == sf::Keyboard::Q)
 			Settings::terminate();
-		} else if(event.key.code == sf::Keyboard::P) {
+		else if(event.key.code == sf::Keyboard::M)
+			MenuUtils::setMenu(MainMenu::generate());
+		else if(event.key.code == sf::Keyboard::P)
 			Settings::pause();
-		}
 	}
-}
-
-void DeathMenu::update(const sf::Time& dt) {
-	Menu::update(dt);
 }
 
 void DeathMenu::draw(sf::RenderTarget& target, sf::RenderStates state) const {

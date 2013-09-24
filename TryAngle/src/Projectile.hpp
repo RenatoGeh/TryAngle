@@ -28,7 +28,7 @@ class Projectile : public Entity {
 		virtual Entity::Type getID(void);
 };
 
-Projectile::Projectile(Entity* parent, double x, double y, double vx, double vy, double r=5) :
+Projectile::Projectile(Entity* parent, double x, double y, double vx, double vy, double r=2) :
 		Entity("Projectile", x+1, y+1, 2*r, 2*r, vx, vy) {
 	this->shape = new sf::CircleShape(r);
 	this->color = new sf::Color(Utility::Random::getRandomColor());
