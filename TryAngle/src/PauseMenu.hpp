@@ -45,7 +45,9 @@ const std::string PauseMenu::messages[] = {
 		"\"Seven-six-two millimeter.\nFull metal jacket.\"",
 		"\"I wouldn't shit you. You're my favorite turd!\"",
 		"\"From now on you're Gomer Pyle.\"",
-		"\"Great Scott!\""};
+		"\"Great Scott!\"",
+		"\"I'm a mog: half man, half dog\nI'm my own best friend!\"",
+		"\"May the Schwartz be with you!\""};
 
 PauseMenu::PauseMenu(void) : Menu("Paused Game"),
 		board(sf::Vector2<float>(Settings::Width, Settings::Height)) {

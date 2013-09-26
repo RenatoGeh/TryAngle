@@ -36,6 +36,9 @@ class Player : public Entity {
 	public:
 		Shield& getShield(void);
 	public:
+		virtual void setColor(sf::Uint8, sf::Uint8, sf::Uint8);
+		virtual void setOutlineColor(sf::Uint8, sf::Uint8, sf::Uint8);
+	public:
 		virtual void damage(double);
 	public:
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
@@ -148,6 +151,16 @@ void Player::subLevel(unsigned short int decrement = 1) {
 		this->level -= decrement;
 		this->shape->setPointCount(3 + this->level);
 	}
+}
+
+void Player::setColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
+	Entity::setColor(r, g, b);
+	shape->setFillColor(*color);
+}
+
+void Player::setOutlineColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
+	Entity::setOutlineColor(r, g, b);
+	shape->setOutlineColor(*color);
 }
 
 Shield& Player::getShield(void) {return shield;}

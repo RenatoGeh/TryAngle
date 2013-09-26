@@ -36,6 +36,7 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 
 		std::string name;
 		sf::Color* color;
+		sf::Color* outline_color;
 	public:
 		Entity(std::string, double, double, double, double, double, double);
 		virtual ~Entity(void);
@@ -57,13 +58,17 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 		Vector2D* getSize(void);
 		Vector2D* getSpeed(void);
 		sf::Color* getColor(void);
+		sf::Color* getOutlineColor(void);
 		bool getTeam(void);
+		const std::string& getName(void);
 		virtual Entity::Type getID(void) = 0;
 	public:
 		void setActive(bool);
 		void setSize(double, double);
 		void setSpeed(double, double);
-		void setColor(sf::Uint8, sf::Uint8, sf::Uint8);
+		void setName(const std::string&);
+		virtual void setColor(sf::Uint8, sf::Uint8, sf::Uint8);
+		virtual void setOutlineColor(sf::Uint8, sf::Uint8, sf::Uint8);
 		void setTeam(bool);
 	public:
 		virtual void update(const sf::Time&);
@@ -78,18 +83,15 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 std::vector<Entity*> Entity::entities;
 std::vector<sf::Drawable*> Entity::paintables;
 
-Entity::Entity(std::string name, double x, double y, double w=0, double h=0,
-		double vx=0, double vy=0) {
-	this->name = name;
-	this->color = NULL;
-	this->angle = 0;
+Entity::Entity(std::string name_, double x, double y, double w=0, double h=0,
+		double vx=0, double vy=0) :
+			position(new Vector2D(x, y)),
+			size(new Vector2D(x, y)),
+			speed(new Vector2D(x, y)),
+			team(false), active(false),
+			angle(0), name(name_),
+			color(nullptr), outline_color(nullptr) {
 
-	this->position = new Vector2D(x, y);
-	this->size = new Vector2D(w, h);
-	this->speed = new Vector2D(vx, vy);
-	this->team = false;
-
-	this->active = false;
 	this->level = 0;
 }
 
@@ -197,16 +199,25 @@ bool Entity::isActive() {return active;}
 Vector2D* Entity::getSize() {return size;}
 Vector2D* Entity::getSpeed() {return speed;}
 sf::Color* Entity::getColor() {return color;}
+sf::Color* Entity::getOutlineColor(void) {return outline_color;}
 bool Entity::getTeam() {return team;}
+const std::string& Entity::getName(void) {return name;}
 
 void Entity::setActive(bool active) {this->active = active;}
 void Entity::setSize(double x, double y) {size->set(x, y);}
 void Entity::setSpeed(double x, double y) {speed->set(x, y);}
 void Entity::setTeam(bool team) {this->team = team;}
 void Entity::setColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
-	delete color;
-	color = new sf::Color(r, g, b);
+	color->r = r;
+	color->g = g;
+	color->b = b;
 }
+void Entity::setOutlineColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
+	outline_color->r = r;
+	outline_color->g = g;
+	outline_color->b = b;
+}
+void Entity::setName(const std::string& name_) {name = name_;}
 
 void Entity::update(const sf::Time& dt) {
 	if(dead) return;
