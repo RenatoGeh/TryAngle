@@ -86,8 +86,8 @@ std::vector<sf::Drawable*> Entity::paintables;
 Entity::Entity(std::string name_, double x, double y, double w=0, double h=0,
 		double vx=0, double vy=0) :
 			position(new Vector2D(x, y)),
-			size(new Vector2D(x, y)),
-			speed(new Vector2D(x, y)),
+			size(new Vector2D(w, h)),
+			speed(new Vector2D(vx, vy)),
 			team(false), active(false),
 			angle(0), name(name_),
 			color(nullptr), outline_color(nullptr) {

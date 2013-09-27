@@ -12,17 +12,22 @@
 #include <sstream>
 #include <fstream>
 
+#include "Player.hpp"
+#include "Gambs.hpp"
+
 class Stats {
 	private:
 		std::string path;
 		Player* val_ptr;
 	public:
-		Stats(const std::string&, Player*);
+		Stats(Player*, std::string);
+		Stats(const Stats&);
 		~Stats(void);
 	public:
 		const std::string& getPath(void) const;
 		Player* getPlayer(void) const;
 	public:
+		Stats& operator = (const Stats&);
 		friend std::ostream& operator << (std::ostream&, const Stats&);
 		friend std::istream& operator >> (std::istream&, const Stats&);
 	private:
@@ -35,13 +40,37 @@ class Stats {
 				std::ostream&, const sf::Color&);
 	public:
 		static bool save(const Stats&);
-		static Stats* load(const std::string& path, Player*);
+		static Stats load(const std::string& path, Player*);
+	public:
+		inline static bool exists(const std::string&);
+		static void setDefault(const Stats&);
+		static Stats getDefault(Player*);
+	public:
+		static const std::string Extension;
+		static const std::string Default;
+		static bool def_exists;
 };
 
-Stats::Stats(const std::string& r_path, Player* object) :
-		path(r_path), val_ptr(object) {}
+const std::string Stats::Extension = ".stats";
+const std::string Stats::Default = "def_player.bak";
+bool Stats::def_exists = Stats::exists(Stats::Default);
+
+Stats::Stats(Player* object, std::string r_path = "") :
+		path(r_path), val_ptr(object) {
+	if(object == nullptr) return;
+	if(path.empty()) path = object->getName() + Stats::Extension;
+	std::remove(path.begin(), path.end(), ' ');
+}
+
+Stats::Stats(const Stats& copy) : path(copy.path), val_ptr(copy.val_ptr) {}
 
 Stats::~Stats(void) {}
+
+Stats& Stats::operator = (const Stats& copy) {
+	path = copy.path;
+	val_ptr = copy.val_ptr;
+	return *this;
+}
 
 const std::string& Stats::getPath(void) const {return path;}
 Player* Stats::getPlayer(void) const {return val_ptr;}
@@ -127,7 +156,8 @@ std::istream& operator >> (std::istream& stream, const Stats& stats) {
 }
 
 bool Stats::save(const Stats& stats) {
-	std::ofstream output(stats.path);
+	std::ofstream output(stats.path,
+			std::ios_base::trunc | std::ofstream::out);
 
 	if(!output.is_open()) {
 		std::cerr << "D'Oh! File Input: something went wrong. "
@@ -142,8 +172,8 @@ bool Stats::save(const Stats& stats) {
 	return true;
 }
 
-Stats* Stats::load(const std::string& path, Player* object) {
-	std::ifstream input(path);
+Stats Stats::load(const std::string& path, Player* object) {
+	std::ifstream input(path, std::ifstream::in);
 
 	if(!input.is_open()) {
 		std::cerr << "AH! LOADING HAS FAILED MISERABLY! Like you."
@@ -151,12 +181,48 @@ Stats* Stats::load(const std::string& path, Player* object) {
 		return nullptr;
 	}
 
-	Stats* stats = new Stats(path, object);
+	Stats stats(object, path);
 	input >> stats;
 
 	input.close();
 
 	return stats;
+}
+
+inline bool Stats::exists(const std::string& path) {
+	return std::ifstream(path);
+}
+
+void Stats::setDefault(const Stats& stats) {
+	std::ofstream output(Stats::Default,
+			std::ios_base::trunc | std::ofstream::out);
+
+	if(!output.is_open()) {
+		std::cerr << "Problem with your output default, yo. "
+				"That's a bad thing. Worse than your dad." << std::endl;
+		return;
+	}
+
+	output << stats.path;
+
+	output.close();
+	Stats::def_exists = true;
+}
+
+Stats Stats::getDefault(Player* target) {
+	if(!Stats::def_exists) return Stats(nullptr);
+
+	std::ifstream input(Stats::Default, std::ifstream::in);
+	std::string line;
+
+	if(!input.is_open()) {
+		std::cerr << "Ah! Default's input problem! No good." << std::endl;
+		return nullptr;
+	}
+
+	std::getline(input, line);
+
+	return Stats::load(line, target);
 }
 
 #endif

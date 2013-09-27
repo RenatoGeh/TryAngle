@@ -165,8 +165,14 @@ void Player::setOutlineColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
 
 Shield& Player::getShield(void) {return shield;}
 
+#include "Stats.hpp"
+
 bool Player::handleDeath(void) {
 	if(this->isDead()) {
+		/*Stats state(this);
+		Stats::save(state);
+		Stats::setDefault(state);*/
+
 		Settings::pause();
 		MenuUtils::setMenu(DeathMenu::generate());
 		return true;
@@ -183,6 +189,7 @@ void Player::setPlayer(Player* player) {
 	Player::def_player = player;
 	Entity::add(Player::def_player);
 	UserInterface::bind(Player::def_player);
+	Stats::getDefault(player);
 }
 
 namespace ProjectileUtility {
