@@ -38,6 +38,8 @@ class Player : public Entity {
 	public:
 		virtual void setColor(sf::Uint8, sf::Uint8, sf::Uint8);
 		virtual void setOutlineColor(sf::Uint8, sf::Uint8, sf::Uint8);
+		virtual void setColor(const sf::Color&);
+		virtual void setOutlineColor(const sf::Color&);
 	public:
 		virtual void damage(double);
 	public:
@@ -55,13 +57,12 @@ Player* Player::def_player = nullptr;
 Player::Player(std::string name, double x, double y, double r) :
 		Entity(name, x, y, 2*r, 2*r), shield(this) {
 	this->shape = new sf::CircleShape(r);
-	this->color = new sf::Color(0, 0, 255);
 	this->team = true;
 
-	this->shape->setOutlineColor(sf::Color::Black);
+	this->setOutlineColor(0, 0, 0);
 	this->shape->setOutlineThickness(1.5);
 	this->shape->setPointCount(3 + this->level);
-	this->shape->setFillColor(*color);
+	this->setColor(0, 0, 255);
 
 	this->setOrigin(0, 0);
 	this->setPosition(position->x, position->y);
@@ -160,7 +161,15 @@ void Player::setColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
 
 void Player::setOutlineColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
 	Entity::setOutlineColor(r, g, b);
-	shape->setOutlineColor(*color);
+	shape->setOutlineColor(*outline_color);
+}
+
+void Player::setColor(const sf::Color& color) {
+	setColor(color.r, color.g, color.b);
+}
+
+void Player::setOutlineColor(const sf::Color& color) {
+	setOutlineColor(color.r, color.g, color.b);
 }
 
 Shield& Player::getShield(void) {return shield;}
@@ -169,9 +178,9 @@ Shield& Player::getShield(void) {return shield;}
 
 bool Player::handleDeath(void) {
 	if(this->isDead()) {
-		/*Stats state(this);
+		Stats state(this);
 		Stats::save(state);
-		Stats::setDefault(state);*/
+		Stats::setDefault(state);
 
 		Settings::pause();
 		MenuUtils::setMenu(DeathMenu::generate());

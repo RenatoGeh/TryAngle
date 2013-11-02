@@ -37,6 +37,11 @@ class Enemy : public Entity {
 		void draw(sf::RenderTarget&, sf::RenderStates) const;
 		void update(const sf::Time& dt);
 	public:
+		virtual void setColor(sf::Uint8, sf::Uint8, sf::Uint8);
+		virtual void setOutlineColor(sf::Uint8, sf::Uint8, sf::Uint8);
+		virtual void setColor(const sf::Color&);
+		virtual void setOutlineColor(const sf::Color&);
+	public:
 		virtual Entity::Type getID(void);
 		virtual bool handleDeath(void);
 	public:
@@ -49,10 +54,10 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 	this->color = new sf::Color(Utility::Random::getRandomColor());
 	this->wasInside = false;
 
-	this->shape->setOutlineColor(sf::Color::Black);
+	this->setOutlineColor(sf::Color::Black);
 	this->shape->setOutlineThickness(1.5);
 	this->shape->setPointCount(3+(level=Player::getPlayer()->getLevel()));
-	this->shape->setFillColor(*color);
+	this->setColor(*color);
 
 	this->setOrigin(0, 0);
 	this->setPosition(position->x, position->y);
@@ -127,6 +132,24 @@ void Enemy::subLevel(unsigned short int decrement = 1) {
 		this->level -= decrement;
 		this->shape->setPointCount(3 + this->level);
 	}
+}
+
+void Enemy::setColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
+	Entity::setColor(r, g, b);
+	shape->setFillColor(*color);
+}
+
+void Enemy::setOutlineColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
+	Entity::setOutlineColor(r, g, b);
+	shape->setOutlineColor(*outline_color);
+}
+
+void Enemy::setColor(const sf::Color& color) {
+	setColor(color.r, color.g, color.b);
+}
+
+void Enemy::setOutlineColor(const sf::Color& color) {
+	setOutlineColor(color.r, color.g, color.b);
 }
 
 Entity::Type Enemy::getID(void) {return Entity::Type::Enemy;}

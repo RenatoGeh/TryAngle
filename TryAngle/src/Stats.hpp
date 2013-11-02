@@ -32,12 +32,10 @@ class Stats {
 		friend std::istream& operator >> (std::istream&, const Stats&);
 	private:
 		template <typename T>
-			inline static T getType(std::istream&, std::stringstream&,
-					std::string&);
-		inline static void pullColor(std::istream&, std::stringstream&,
-				std::string&, int&, int&, int&);
-		inline static void streamColor(
-				std::ostream&, const sf::Color&);
+			inline static T getType(std::istream&, std::string&);
+		inline static void pullColor(std::istream&, std::string&,
+				int&, int&, int&);
+		inline static void streamColor(std::ostream&, const sf::Color&);
 	public:
 		static bool save(const Stats&);
 		static Stats load(const std::string& path, Player*);
@@ -55,11 +53,23 @@ const std::string Stats::Extension = ".stats";
 const std::string Stats::Default = "def_player.bak";
 bool Stats::def_exists = Stats::exists(Stats::Default);
 
+namespace {
+	std::string trim(const std::string& str) {
+		std::string res;
+
+		for(auto it = str.begin();it!=str.end();++it)
+			if(*it != ' ')
+				res += *it;
+
+		return res;
+	}
+}
+
 Stats::Stats(Player* object, std::string r_path = "") :
 		path(r_path), val_ptr(object) {
 	if(object == nullptr) return;
 	if(path.empty()) path = object->getName() + Stats::Extension;
-	std::remove(path.begin(), path.end(), ' ');
+	path = trim(path);
 }
 
 Stats::Stats(const Stats& copy) : path(copy.path), val_ptr(copy.val_ptr) {}
@@ -101,20 +111,18 @@ std::ostream& operator << (std::ostream& stream, const Stats& stats) {
 }
 
 template <typename T>
-	inline T Stats::getType(std::istream& stream,
-			std::stringstream& converter, std::string& line) {
+	inline T Stats::getType(std::istream& stream, std::string& line) {
 	std::getline(stream, line);
-	converter.str(line);
+	std::stringstream converter(line);
 	T val;
 	converter >> val;
 	return val;
 }
 
-inline void Stats::pullColor(std::istream& stream,
-		std::stringstream& converter, std::string& line,
+inline void Stats::pullColor(std::istream& stream, std::string& line,
 		int& r, int& g, int& b) {
 	std::getline(stream, line);
-	converter.str(line);
+	std::stringstream converter(line);
 	converter >> r >> g >> b;
 }
 
@@ -128,28 +136,28 @@ std::istream& operator >> (std::istream& stream, const Stats& stats) {
 	converter.str(line);
 	object->setName(line);
 
-	object->setMaxHealth(Stats::getType<double>(stream, converter, line));
-	object->setMaxExp(Stats::getType<double>(stream, converter, line));
+	object->setMaxHealth(Stats::getType<double>(stream, line));
+	object->setMaxExp(Stats::getType<double>(stream, line));
 	object->setLevel(Stats::getType<unsigned short int>(
-			stream, converter, line));
+			stream, line));
 
 	object->getShield().setMaxShield(Stats::getType<double>(
-			stream, converter, line));
+			stream, line));
 	object->getShield().setMitigation(Stats::getType<double>(
-			stream, converter, line));
+			stream, line));
 
 	int r, g, b;
 
-	Stats::pullColor(stream, converter, line, r, g, b);
+	Stats::pullColor(stream, line, r, g, b);
 	object->getShield().setColor(r, g, b);
 
-	Stats::pullColor(stream, converter, line, r, g, b);
+	Stats::pullColor(stream, line, r, g, b);
 	object->getShield().setOutlineColor(r, g, b);
 
-	Stats::pullColor(stream, converter, line, r, g, b);
+	Stats::pullColor(stream, line, r, g, b);
 	object->setColor(r, g, b);
 
-	Stats::pullColor(stream, converter, line, r, g, b);
+	Stats::pullColor(stream, line, r, g, b);
 	object->setOutlineColor(r, g, b);
 
 	return stream;

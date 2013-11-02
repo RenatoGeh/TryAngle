@@ -100,7 +100,7 @@ template <typename Fn> void Item<Fn>::expAction(void) {
 }
 
 template <typename Fn> void Item<Fn>::levelAction(void) {
-	Player::getPlayer()->addLevel(1);
+	Player::getPlayer()->addExp(Player::getPlayer()->getMaxExp());
 }
 
 template <typename Fn> void Item<Fn>::healthAction(void) {

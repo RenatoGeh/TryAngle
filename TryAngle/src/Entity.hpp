@@ -67,9 +67,12 @@ class Entity : public sf::Drawable, public sf::Transformable, public Mortal {
 		void setSize(double, double);
 		void setSpeed(double, double);
 		void setName(const std::string&);
+		void setTeam(bool);
+	public:
 		virtual void setColor(sf::Uint8, sf::Uint8, sf::Uint8);
 		virtual void setOutlineColor(sf::Uint8, sf::Uint8, sf::Uint8);
-		void setTeam(bool);
+		virtual void setColor(const sf::Color&);
+		virtual void setOutlineColor(const sf::Color&);
 	public:
 		virtual void update(const sf::Time&);
 		virtual bool intersects(Entity*);
@@ -90,7 +93,7 @@ Entity::Entity(std::string name_, double x, double y, double w=0, double h=0,
 			speed(new Vector2D(vx, vy)),
 			team(false), active(false),
 			angle(0), name(name_),
-			color(nullptr), outline_color(nullptr) {
+			color(new sf::Color()), outline_color(new sf::Color()) {
 
 	this->level = 0;
 }
@@ -207,6 +210,7 @@ void Entity::setActive(bool active) {this->active = active;}
 void Entity::setSize(double x, double y) {size->set(x, y);}
 void Entity::setSpeed(double x, double y) {speed->set(x, y);}
 void Entity::setTeam(bool team) {this->team = team;}
+
 void Entity::setColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
 	color->r = r;
 	color->g = g;
@@ -217,6 +221,13 @@ void Entity::setOutlineColor(sf::Uint8 r, sf::Uint8 g, sf::Uint8 b) {
 	outline_color->g = g;
 	outline_color->b = b;
 }
+void Entity::setColor(const sf::Color& color) {
+	Entity::setColor(color.r, color.g, color.b);
+}
+void Entity::setOutlineColor(const sf::Color& color) {
+	Entity::setOutlineColor(color.r, color.g, color.b);
+}
+
 void Entity::setName(const std::string& name_) {name = name_;}
 
 void Entity::update(const sf::Time& dt) {
