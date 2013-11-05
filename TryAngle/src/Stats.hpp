@@ -15,6 +15,22 @@
 #include "Player.hpp"
 #include "Gambs.hpp"
 
+/**
+ * Ye Olde List O' Things To Bootleg:
+ *
+ * 1.  Name
+ * 2.  Max Health
+ * 3.  Max Exp
+ * 4.  Level
+ * 5.  Max Shield
+ * 6.  Shield Mitigation
+ * 7.  Shield Fill Color
+ * 8.  Shield Outline Color
+ * 9.  Player Fill Color
+ * 10. Player Outline Color
+ *
+ */
+
 class Stats {
 	private:
 		std::string path;

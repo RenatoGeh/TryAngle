@@ -37,8 +37,8 @@ class Mortal {
 	public:
 		void setMaxHealth(double);
 		void setMaxExp(double);
-		double getMaxHealth(void);
-		double getMaxExp(void);
+		double getMaxHealth(void) const;
+		double getMaxExp(void) const;
 	public:
 		virtual void setLevel(unsigned short int);
 		virtual void addLevel(unsigned short int);
@@ -100,8 +100,8 @@ bool Mortal::isDead(void) const {return health<=0;}
 void Mortal::setMaxHealth(double m_health) {max_health = m_health;}
 void Mortal::setMaxExp(double m_exp) {max_exp = m_exp;}
 
-double Mortal::getMaxHealth(void) {return max_health;}
-double Mortal::getMaxExp(void) {return max_exp;}
+double Mortal::getMaxHealth(void) const {return max_health;}
+double Mortal::getMaxExp(void) const {return max_exp;}
 
 void Mortal::setLevel(unsigned short int n_level) {level=n_level;}
 void Mortal::addLevel(unsigned short int i_level) {level+=i_level;}

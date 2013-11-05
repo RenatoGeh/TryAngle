@@ -127,6 +127,14 @@ bool Player::onEvent(const sf::Event& event) {
 				std::cout << this->getLevel() << std::endl;
 			}
 		break;
+		case sf::Event::MouseMoved:
+			angle = atan2(position->x - Settings::mouse_position.x,
+					position->y - Settings::mouse_position.y);
+		break;
+		case sf::Event::MouseButtonPressed:
+			if(event.mouseButton.button == sf::Mouse::Left)
+				this->shoot();
+		break;
 		default:
 			return false;
 	}
@@ -198,7 +206,7 @@ void Player::setPlayer(Player* player) {
 	Player::def_player = player;
 	Entity::add(Player::def_player);
 	UserInterface::bind(Player::def_player);
-	Stats::getDefault(player);
+	Stats::getDefault(Player::def_player);
 }
 
 namespace ProjectileUtility {
