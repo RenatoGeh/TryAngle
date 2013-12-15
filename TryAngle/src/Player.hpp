@@ -15,6 +15,7 @@
 #include "Vector2D.hpp"
 #include "DeathMenu.hpp"
 #include "Shield.hpp"
+#include "SkillSet.hpp"
 
 class Player : public Entity {
 	private:

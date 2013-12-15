@@ -12,6 +12,7 @@
 #include "Button.hpp"
 #include "Background.hpp"
 #include "Timer.hpp"
+#include "SentenceGenerator.hpp"
 
 class MainMenu : public Menu {
 	private:
@@ -31,8 +32,11 @@ class MainMenu : public Menu {
 		static std::string getTitle(void);
 	public:
 		static MainMenu* generate(void);
+	private:
+		static SentenceGenerator gen;
 };
 
+SentenceGenerator MainMenu::gen(3);
 const std::string MainMenu::titles[] = {"Jilly Bean", "Blame on the Boogey!",
 	"I Want My MTV", "On The Border of Hell", "Walk of Lifeguards",
 	"Jenni and the Cats", "I Walked", "101 Helium Balloons", "Green Moon",
@@ -46,6 +50,8 @@ MainMenu::MainMenu(void) : Menu(MainMenu::getTitle()),
 	options(new Button(Settings::Width/2, 250, "Awpshuns")),
 	customize(new Button(Settings::Width/2, 350, "Make me Unique!")),
 	exit(new Button(Settings::Width/2, 450, "See you soon!")) {
+
+	this->setTitleSize(20);
 
 	this->add(play);
 	this->add(options);
@@ -89,8 +95,7 @@ void MainMenu::onEvent(const sf::Event& event) {
 }
 
 std::string MainMenu::getTitle(void) {
-	return MainMenu::titles[Utility::Random::getUnsignedRandom(0,
-			sizeof(MainMenu::titles)/sizeof(*MainMenu::titles))];
+	return gen.get();
 }
 
 MainMenu* MainMenu::generate(void) {

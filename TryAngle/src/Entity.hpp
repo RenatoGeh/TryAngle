@@ -270,12 +270,12 @@ void Entity::moveTo(double x, double y) {
 #include "Projectile.hpp"
 
 void Entity::shoot(void) {
-	double alpha, theta = math::PI-(this->getRotation()*math::PI/180);
+	double theta = math::PI-(this->getRotation()*math::PI/180);
 	double r = this->size->x/2;
 	unsigned short int k = 3 + level;
 
 	for(short int i=0;i<k;i++) {
-		alpha = theta + i*(2*math::PI/k);
+		double alpha = theta + i*(2*math::PI/k);
 		Entity::add(new Projectile(this,
 				position->x + r*sin(alpha),
 				position->y + r*cos(alpha),

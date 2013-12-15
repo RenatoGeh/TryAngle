@@ -8,6 +8,8 @@
 #ifndef SKILLS_HPP_
 #define SKILLS_HPP_
 
+#include <iostream>
+
 #include "Skill.hpp"
 
 /*
@@ -16,17 +18,26 @@
  */
 
 namespace Skills {
-	class : public Skill::Passive {
+	class _Default : public Skill::Passive {
+		public:
+			_Default(void) : Skill::Passive("Default") {}
 		public:
 			void onTrigger(void) {}
-	} Default("Default");
+	} Default;
 
-	class : public Skill::Instant {
+	class _Instant : public Skill::Instant {
+		public:
+			_Instant(void) : Skill::Instant("Instant") {}
 		public:
 			void onTrigger(void) {
-
+				std::cout << "Sexy Powers ACTIVATE!" << std::endl;
 			}
-	};
+	} Instant;
+
+	class _Timed : public Skill::Timed {
+		public:
+			_Timed(void) : Skill::Timed("Timed", .5f, [](){}) {}
+	} Timed;
 }
 
 #endif

@@ -23,6 +23,7 @@ class Menu : public sf::Drawable {
 	public:
 		std::string getTitle(void) const;
 		void setTitle(std::string);
+		void setTitleSize(int);
 	public:
 		void add(Component*);
 		void remove(Component*);
@@ -59,6 +60,15 @@ Menu::~Menu(void) {
 
 std::string Menu::getTitle(void) const {return this->title.getString();}
 void Menu::setTitle(std::string title) {this->title.setString(title);}
+
+void Menu::setTitleSize(int size) {
+	title.setCharacterSize(size);
+
+	sf::FloatRect titleBounds(this->title.getLocalBounds());
+
+	title.setOrigin(0, 0);
+	title.setPosition((Settings::Width-titleBounds.width)/2, 50);
+}
 
 Component* Menu::getTriggered(const sf::Event& event) {
 	for(auto it = components.begin();it!=components.end();++it)

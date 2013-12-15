@@ -9,6 +9,7 @@
 #define PAUSEMENU_HPP_
 
 #include "Menu.hpp"
+#include "SentenceGenerator.hpp"
 
 class PauseMenu : public Menu {
 	private:
@@ -26,8 +27,11 @@ class PauseMenu : public Menu {
 		static std::string getMessage(void);
 	public:
 		static PauseMenu* generate(void);
+	private:
+		static SentenceGenerator gen;
 };
 
+SentenceGenerator PauseMenu::gen(3);
 const std::string PauseMenu::messages[] = {
 		"\"I am Darth Vader from Planet Vulcan!\"",
 		"\"Come with me if you want to bang!\"",
@@ -100,8 +104,9 @@ void PauseMenu::draw(sf::RenderTarget& target, sf::RenderStates state) const {
 }
 
 std::string PauseMenu::getMessage(void) {
-	return messages[Utility::Random::getUnsignedRandom(0,
-			sizeof(messages)/sizeof(*messages))];
+	/*return messages[Utility::Random::getUnsignedRandom(0,
+			sizeof(messages)/sizeof(*messages))];*/
+	return gen.get();
 }
 
 PauseMenu* PauseMenu::generate(void) {return new PauseMenu();}
