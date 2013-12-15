@@ -25,6 +25,8 @@ class Player : public Entity {
 		static void setPlayer(Player*);
 	private:
 		Shield shield;
+	public:
+		SkillSet set;
 	protected:
 		sf::CircleShape* shape;
 	public:
@@ -56,13 +58,13 @@ class Player : public Entity {
 Player* Player::def_player = nullptr;
 
 Player::Player(std::string name, double x, double y, double r) :
-		Entity(name, x, y, 2*r, 2*r), shield(this) {
+		Entity(name, x, y, 2*r, 2*r), shield(this), set() {
 	this->shape = new sf::CircleShape(r);
 	this->team = true;
 
 	this->setOutlineColor(0, 0, 0);
 	this->shape->setOutlineThickness(1.5);
-	this->shape->setPointCount(3 + this->level);
+	this->shape->setPointCount(set.getSides());
 	this->setColor(0, 0, 255);
 
 	this->setOrigin(0, 0);
@@ -70,6 +72,8 @@ Player::Player(std::string name, double x, double y, double r) :
 	this->setOrigin(r, r);
 
 	this->level = 0;
+
+	set.link(set.getSkills().add(&Skills::Instant), sf::Keyboard::F1);
 }
 
 Player::~Player() {
@@ -117,6 +121,8 @@ void Player::update(const sf::Time& dt) {
 }
 
 bool Player::onEvent(const sf::Event& event) {
+	set.onEvent(event);
+
 	switch(event.type) {
 		case sf::Event::KeyPressed:
 		break;
@@ -148,18 +154,15 @@ Entity::Type Player::getID(void) {return Entity::Type::Player;}
 void Player::setLevel(unsigned short int level) {
 	if(this->level != level) {
 		this->level = level;
-		this->shape->setPointCount(3 + this->level);
 	}
 }
 
 void Player::addLevel(unsigned short int increment = 1) {
 	this->level += increment;
-	this->shape->setPointCount(3 + this->level);
 }
 void Player::subLevel(unsigned short int decrement = 1) {
 	if(this->level > 0) {
 		this->level -= decrement;
-		this->shape->setPointCount(3 + this->level);
 	}
 }
 

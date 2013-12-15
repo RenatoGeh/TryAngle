@@ -29,8 +29,11 @@ class DeathMenu : public Menu {
 		static std::string getMessage(void);
 	public:
 		static DeathMenu* generate(void);
+	private:
+		static SentenceGenerator gen;
 };
 
+SentenceGenerator DeathMenu::gen(5);
 const std::string DeathMenu::messages[] = {"Hi. Po. Po. Ta. Mus.",
 		"42", "It is known.", "Hey there sexy.", "WHY SO MANY COLORS?!",
 		"Is it he or she\n for that in here?", "I am confused.\n Am I dead?",
@@ -54,10 +57,10 @@ DeathMenu::DeathMenu(void) : Menu("THE END"),
 	respawn.setPosition(Settings::Width - respawnBounds.width - 50,
 			Settings::Height - respawnBounds.height - 100);
 
-	message.setCharacterSize(30);
+	message.setCharacterSize(20);
 	message.setFont(Settings::DEF_FONT);
 	message.setColor(sf::Color::Red);
-	message.setString(DeathMenu::getMessage());
+	message.setString("You're dead because\n" + DeathMenu::getMessage());
 
 	message.setPosition(50, 250);
 
@@ -91,8 +94,9 @@ void DeathMenu::draw(sf::RenderTarget& target, sf::RenderStates state) const {
 }
 
 std::string DeathMenu::getMessage(void) {
-	return messages[Utility::Random::getUnsignedRandom(0,
-			sizeof(messages)/sizeof(*messages))];
+	/*return messages[Utility::Random::getUnsignedRandom(0,
+			sizeof(messages)/sizeof(*messages))];*/
+	return gen.insult();
 }
 
 DeathMenu* DeathMenu::generate(void) {return new DeathMenu();}

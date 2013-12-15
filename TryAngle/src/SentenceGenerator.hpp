@@ -39,6 +39,7 @@ class SentenceGenerator {
 		~SentenceGenerator(void);
 	public:
 		std::string get(void);
+		std::string insult(void);
 	public:
 		void setSeed(unsigned long int);
 		void setSize(unsigned char);
@@ -187,9 +188,9 @@ std::string SentenceGenerator::getItems(const std::string array[]) {
 	std::cout << n << std::endl;
 
 	for(i=0;i<n;++i) {
-		if(i==n-1 && n)
+		if(i==n-1 && n!=1)
 			res += "and ";
-		else if(n)
+		else if(n!=1)
 			res += ", ";
 
 		res += getItem(array);
@@ -238,6 +239,50 @@ std::string SentenceGenerator::get(void) {
 	}
 
 	res += getItem(punctuations);
+
+	return res;
+}
+
+/*
+ * Insults the player according to the size:
+ * 	0 = You + 1 N
+ * 	1 = You + 1 ADJ + 1 N
+ *  2 = You + [n] ADJ + 1 N
+ *  3 = 1 N + 1 V + You
+ *  4 = 1 N + 1 ADV + 1 V + You
+ *  5 = 1 ADJ + 1 N + 1 ADV + 1 V + You
+ *
+ *  All of these sentences are followed by an '!'.
+ */
+std::string SentenceGenerator::insult(void) {
+	std::string res;
+
+	switch(size) {
+		case 0:
+			res = "You " + getItem(nouns);
+		break;
+		case 1:
+			res = "You " + getItem(adjectives) + getItem(nouns);
+		break;
+		case 2:
+			res = "You " + getItems(adjectives) + getItem(nouns);
+		break;
+		case 3:
+			res = getItem(nouns) + getItem(verbs) + "You ";
+		break;
+		case 4:
+			res = getItem(nouns) + getItem(adverbs) + getItem(verbs) + "You ";
+		break;
+		case 5:
+			res = getItem(adjectives) + getItem(nouns) + getItem(adverbs) +
+				getItem(verbs) + "You ";
+		break;
+		default:
+
+		break;
+	}
+
+	res += "!";
 
 	return res;
 }

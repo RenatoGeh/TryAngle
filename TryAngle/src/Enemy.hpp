@@ -56,7 +56,7 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 
 	this->setOutlineColor(sf::Color::Black);
 	this->shape->setOutlineThickness(1.5);
-	this->shape->setPointCount(3+(level=Player::getPlayer()->getLevel()));
+	this->shape->setPointCount(Player::getPlayer()->set.getSides());
 	this->setColor(*color);
 
 	this->setOrigin(0, 0);
@@ -72,6 +72,7 @@ Enemy::Enemy(double x, double y, double r=30, double vx=0, double vy=0) :
 	this->nav = new Path(this);
 
 	this->setHealth(90);
+	this->level = Player::getPlayer()->getLevel();
 }
 
 Enemy::~Enemy() {

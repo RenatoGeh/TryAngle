@@ -96,13 +96,13 @@ class SkillTree {
 		SkillTree(void);
 		~SkillTree(void);
 	public:
-		inline SkillNode& add(Skill*);
+		inline SkillNode* add(Skill*);
 };
 
 SkillTree::SkillTree(void) : head(&Skills::Default) {}
 SkillTree::~SkillTree(void) {}
 
-inline SkillNode& SkillTree::add(Skill* core) {return head.add(core);}
+inline SkillNode* SkillTree::add(Skill* core) {return &(head.add(core));}
 
 class SkillSet {
 	private:
@@ -124,7 +124,7 @@ class SkillSet {
 		void link(SkillNode*, sf::Keyboard::Key);
 };
 
-SkillSet::SkillSet(unsigned short int) : sides(0) {
+SkillSet::SkillSet(unsigned short int _sides=0) : sides(_sides) {
 	for(int i=0;i<15;++i)
 		hotkeys[i] = nullptr;
 }
@@ -135,7 +135,7 @@ void SkillSet::subSide(unsigned short int dec) {sides -= dec;}
 void SkillSet::setSide(unsigned short int side_) {sides = side_;}
 
 inline SkillTree& SkillSet::getSkills(void) {return tree;}
-inline unsigned short int SkillSet::getSides(void) const {return sides;}
+inline unsigned short int SkillSet::getSides(void) const {return 3+sides;}
 
 void SkillSet::onEvent(const sf::Event& event) {
 	if(event.type == sf::Event::KeyPressed) {
