@@ -34,16 +34,6 @@ class DeathMenu : public Menu {
 };
 
 SentenceGenerator DeathMenu::gen(5);
-const std::string DeathMenu::messages[] = {"Hi. Po. Po. Ta. Mus.",
-		"42", "It is known.", "Hey there sexy.", "WHY SO MANY COLORS?!",
-		"Is it he or she\n for that in here?", "I am confused.\n Am I dead?",
-		"Can it not here for this there?", "I'm going to tell you a secret.",
-		"Did you know that?\n I didn't.", "Has it been forever since?",
-		"Is this real life? Or just mustache?", "Ribbit.", "Screeech!",
-		"Being yourself is nothing\n more than being others.",
-		"Have I ever been in here?\n I feel like I have.",
-		"This ain't no PsyChObALL.\nIt's better!",
-		"Here, have a homemade muffin.\nDon't ask what's made of."};
 
 DeathMenu::DeathMenu(void) : Menu("THE END"),
 		board(sf::Vector2<float>(Settings::Width, Settings::Height)) {
@@ -94,8 +84,6 @@ void DeathMenu::draw(sf::RenderTarget& target, sf::RenderStates state) const {
 }
 
 std::string DeathMenu::getMessage(void) {
-	/*return messages[Utility::Random::getUnsignedRandom(0,
-			sizeof(messages)/sizeof(*messages))];*/
 	return gen.insult();
 }
 

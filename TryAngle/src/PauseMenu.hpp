@@ -32,26 +32,6 @@ class PauseMenu : public Menu {
 };
 
 SentenceGenerator PauseMenu::gen(3);
-const std::string PauseMenu::messages[] = {
-		"\"I am Darth Vader from Planet Vulcan!\"",
-		"\"Come with me if you want to bang!\"",
-		"\"That son of a bitch took my pants!\"",
-		"\"Talk to the hand.\"",
-		"\"No problemo.\"",
-		"\"Disneyland? Fuck, man,\nthis is better than Disneyland!\"",
-		"\"Charlie don't surf!\"",
-		"\"Oh, I'm sorry, did I break your concentration?\"",
-		"\"English, motherfucker, do you speak it?!\"",
-		"\"Did IQs just drop sharply while I was away?\"",
-		"\"Not bad for a human.\"",
-		"\"Back to the ole freezerinos.\"",
-		"\"The dead know only one thing:\nit is better to be alive.\"",
-		"\"Seven-six-two millimeter.\nFull metal jacket.\"",
-		"\"I wouldn't shit you. You're my favorite turd!\"",
-		"\"From now on you're Gomer Pyle.\"",
-		"\"Great Scott!\"",
-		"\"I'm a mog: half man, half dog\nI'm my own best friend!\"",
-		"\"May the Schwartz be with you!\""};
 
 PauseMenu::PauseMenu(void) : Menu("Paused Game"),
 		board(sf::Vector2<float>(Settings::Width, Settings::Height)) {
@@ -104,8 +84,6 @@ void PauseMenu::draw(sf::RenderTarget& target, sf::RenderStates state) const {
 }
 
 std::string PauseMenu::getMessage(void) {
-	/*return messages[Utility::Random::getUnsignedRandom(0,
-			sizeof(messages)/sizeof(*messages))];*/
 	return gen.get();
 }
 

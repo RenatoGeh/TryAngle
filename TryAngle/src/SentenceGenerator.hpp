@@ -40,6 +40,7 @@ class SentenceGenerator {
 	public:
 		std::string get(void);
 		std::string insult(void);
+		std::string describe(void);
 	public:
 		void setSeed(unsigned long int);
 		void setSize(unsigned char);
@@ -61,10 +62,19 @@ class SentenceGenerator {
 		static const std::string punctuations[];
 
 		static const std::string EndOfFile;
+
+		static const std::string* classes[];
+	public:
+		enum Class {
+			Noun=0, Verb, Adverb, Adjective, Pronouns_Direct,
+			Pronouns_Possessive, Punctuation
+		};
 	public:
 		static std::string generate(void);
-	private:
+		static std::string getWord(SentenceGenerator::Class);
+	public:
 		static int arraySize(const std::string[]);
+	private:
 		inline static int arrayIndex(const std::string[]);
 };
 
@@ -127,6 +137,7 @@ const std::string SentenceGenerator::adjectives[] = {"Interesting",
 	"Frantic", "Frightened", "Grumpy", "Hungry", "Hurt", "Jealous", "Lazy", 
 	"Lonely", "Mysterious", "Nasty", "Naughty", "Nervous", "Scary", "Selfish",
 	"Terrible", "Tired", "Upset", "Weary", "Worried", "Cautious", "Thoughtless",
+	"Puzzling", "Tiring", "Upsetting", "Worrying", "Rage Inducing", "Exciting",
 	EndOfFile
 };
 const std::string SentenceGenerator::pronouns_direct[] = {"I", "You", "He", "She",
@@ -145,6 +156,11 @@ const std::string SentenceGenerator::punctuations[] = {"!", ".", "...",
 };
 
 int SentenceGenerator::sizes[] = {-1, -1, -1, -1, -1, -1, -1};
+
+const std::string* SentenceGenerator::classes[] = {
+	nouns, verbs, adverbs, adjectives, pronouns_direct,
+	pronouns_possess, punctuations
+};
 
 SentenceGenerator::SentenceGenerator(
 		unsigned char _size = 2,
@@ -185,12 +201,10 @@ std::string SentenceGenerator::getItems(const std::string array[]) {
 	int i, n = (gen()%3)+1;
 	std::string res;
 
-	std::cout << n << std::endl;
-
 	for(i=0;i<n;++i) {
 		if(i==n-1 && n!=1)
 			res += "and ";
-		else if(n!=1)
+		else if(n!=1 && i!=0)
 			res += ", ";
 
 		res += getItem(array);
@@ -207,15 +221,15 @@ std::string SentenceGenerator::get(void) {
 			res = getItem(nouns);
 		break;
 		case 1:
-			res = gen()%2?getItem(nouns):getItem(pronouns_direct);
+			res = (gen()%2)?getItem(nouns):getItem(pronouns_direct);
 			res += getItem(verbs);
-			res += gen()%2?getItem(nouns):getItem(pronouns_direct);
+			res += (gen()%2)?getItem(nouns):getItem(pronouns_direct);
 		break;
 		case 2:
-			res = gen()%2?getItem(nouns):getItem(pronouns_direct);
+			res = (gen()%2)?getItem(nouns):getItem(pronouns_direct);
 			res += getItem(adverbs);
 			res += getItem(verbs);
-			res += gen()%2?getItem(nouns):getItem(pronouns_direct);
+			res += (gen()%2)?getItem(nouns):getItem(pronouns_direct);
 		break;
 		case 3:
 			res = getItem(adjectives);
@@ -285,6 +299,59 @@ std::string SentenceGenerator::insult(void) {
 	res += "!";
 
 	return res;
+}
+
+/*
+ * Describes something according to the size:
+ * 	0 = 1 ADJ
+ * 	1 = 1 ADV + 1 ADJ
+ * 	2 = [n] ADV + [n] ADJ
+ *
+ * 	All cases are followed by an '!'.
+ */
+std::string SentenceGenerator::describe(void) {
+	std::string res;
+
+	switch(size) {
+		case 0:
+			res = getItem(adjectives);
+		break;
+		case 1:
+			res = getItem(adverbs) + getItem(adjectives);
+		break;
+		case 2:
+			res = getItems(adverbs) + getItems(adjectives);
+		break;
+		default:
+
+		break;
+	}
+
+	res += "!";
+
+	return res;
+}
+
+namespace {
+	inline std::string _getIndItem(const std::string array[]) {
+		return array[Utility::Random::getUnsignedRandom()%
+		             SentenceGenerator::arraySize(array)] + " ";
+	}
+}
+
+std::string SentenceGenerator::generate(void) {
+	return  std::string(_getIndItem(adjectives) +
+			_getIndItem(nouns) +
+			_getIndItem(adverbs) +
+			_getIndItem(verbs) +
+			_getIndItem(adjectives) +
+			_getIndItem(nouns) +
+			_getIndItem(punctuations));
+}
+
+std::string SentenceGenerator::getWord(Class c) {
+	return classes[c]
+		   [Utility::Random::getUnsignedRandom()%arraySize(classes[c])];
 }
 
 #endif

@@ -9,12 +9,15 @@
 #define MENU_HPP_
 
 #include <vector>
+#include <stack>
+
 #include <SFML/Graphics.hpp>
 #include "Component.hpp"
 
 class Menu : public sf::Drawable {
 	private:
 		std::vector<Component*> components;
+		std::stack<Component*> stack;
 		sf::Text title;
 		bool active;
 	public:
@@ -34,7 +37,9 @@ class Menu : public sf::Drawable {
 		virtual void draw(sf::RenderTarget&, sf::RenderStates) const;
 		virtual void destroy(void);
 	protected:
-		Component* getTriggered(const sf::Event&);
+		void pushEvent(const sf::Event&);
+		Component* popEvent(const sf::Event&);
+		inline void clearEvent(void);
 };
 
 Menu::Menu(std::string title) {
@@ -52,10 +57,7 @@ Menu::Menu(std::string title) {
 }
 
 Menu::~Menu(void) {
-	while(!components.empty()) {
-		delete components.back();
-		components.pop_back();
-	}
+	clear();
 }
 
 std::string Menu::getTitle(void) const {return this->title.getString();}
@@ -70,11 +72,10 @@ void Menu::setTitleSize(int size) {
 	title.setPosition((Settings::Width-titleBounds.width)/2, 50);
 }
 
-Component* Menu::getTriggered(const sf::Event& event) {
+void Menu::pushEvent(const sf::Event& event) {
 	for(auto it = components.begin();it!=components.end();++it)
 		if((*it)->onEvent(event))
-			return *it;
-	return nullptr;
+			stack.push(*it);
 }
 
 void Menu::update(const sf::Time& dt) {
@@ -99,6 +100,8 @@ void Menu::remove(Component* e) {
 }
 
 void Menu::clear(void) {
+	clearEvent();
+
 	while(!components.empty()) {
 		delete components.back();
 		components.pop_back();
@@ -109,6 +112,23 @@ void Menu::destroy(void) {this->active = false;}
 
 namespace MenuUtils {
 	void setMenu(Menu*);
+	void mainMenu(void);
 }
+
+Component* Menu::popEvent(const sf::Event& event) {
+	if(!active) return nullptr;
+
+	if(stack.empty())
+		pushEvent(event);
+
+	if(stack.empty()) return nullptr;
+
+	Component* e = stack.top();
+	stack.pop();
+
+	return e;
+}
+
+void Menu::clearEvent(void) {while(!stack.empty()) stack.pop();}
 
 #endif

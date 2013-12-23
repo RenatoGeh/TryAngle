@@ -11,9 +11,11 @@ namespace Settings {
 
 	Vector2D mouse_position = new Vector2D();
 	sf::Font DEF_FONT;
+	sf::Font DEF_TEXT_FONT;
 
 	static_block(defFont) {
 		DEF_FONT.loadFromFile("src/resources/fonts/abduction2002.ttf");
+		DEF_TEXT_FONT.loadFromFile("src/resources/fonts/bnmachine.ttf");
 	}
 
 	bool in_game = false;

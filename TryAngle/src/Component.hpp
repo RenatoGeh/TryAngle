@@ -53,7 +53,7 @@ Vector2D Component::getSize(void) const {return size;}
 void Component::setPosition(double x, double y) {this->pos.set(x, y);}
 void Component::setSize(double x, double y) {this->size.set(x, y);}
 
-math::u_id Component::getID(void) {return this->id;}
+math::u_id Component::getID(void) {return id;}
 
 math::u_id Component::recursive_id(math::u_id global) {
 	if(global%2==0) return 0;

@@ -13,6 +13,7 @@
 #include "Background.hpp"
 #include "Timer.hpp"
 #include "SentenceGenerator.hpp"
+#include "CustomMenu.hpp"
 
 class MainMenu : public Menu {
 	private:
@@ -24,7 +25,7 @@ class MainMenu : public Menu {
 		MainMenu(void);
 		virtual ~MainMenu(void);
 	public:
-		virtual void update(const sf::Time& dt);
+		virtual void update(const sf::Time&);
 		virtual void draw(sf::RenderTarget&, sf::RenderStates) const;
 		virtual void onEvent(const sf::Event&);
 	private:
@@ -36,14 +37,7 @@ class MainMenu : public Menu {
 		static SentenceGenerator gen;
 };
 
-SentenceGenerator MainMenu::gen(3);
-const std::string MainMenu::titles[] = {"Jilly Bean", "Blame on the Boogey!",
-	"I Want My MTV", "On The Border of Hell", "Walk of Lifeguards",
-	"Jenni and the Cats", "I Walked", "101 Helium Balloons", "Green Moon",
-	"I Am The Waldo", "Mars Angel", "Da Ya Think I'm Fat", "Enjoy The Noise",
-	"American Cake", "A Horse With Two Names", "Why M See A", "Porkeater",
-	"Painted Love", "Karma is a Chameleon", "Another One Bites the Crust",
-	"Livin' off a Player", "No Woman No Pie"};
+SentenceGenerator MainMenu::gen(2);
 
 MainMenu::MainMenu(void) : Menu(MainMenu::getTitle()),
 	play(new Button(Settings::Width/2, 150, "Play!")),
@@ -74,28 +68,30 @@ void MainMenu::draw(sf::RenderTarget& target, sf::RenderStates state) const {
 }
 
 void MainMenu::onEvent(const sf::Event& event) {
-	Component* triggered = getTriggered(event);
-	if(triggered == nullptr) return;
-	math::u_id id = triggered->getID();
+	Component* triggered = nullptr;
 
-	if(id == play->getID())
-		Settings::restart();
-	else if(id == options->getID())
-		std::cout << "OPTIONS!" << std::endl;
-	else if(id == customize->getID())
-		std::cout << "CUSTOMIZATION!" << std::endl;
-	else if(id == exit->getID())
-		Settings::terminate();
-	else
-		std::cerr << "Something went terribly wrong: You!" << std::endl;
+	while((triggered = popEvent(event))) {
+		math::u_id id = triggered->getID();
 
-	if(event.type == sf::Event::KeyReleased)
-		if(event.key.code == sf::Keyboard::P)
-			Settings::pause();
+		if(id == play->getID())
+			Settings::restart();
+		else if(id == options->getID())
+			std::cout << "OPTIONS!" << std::endl;
+		else if(id == customize->getID())
+			MenuUtils::setMenu(CustomMenu::generate());
+		else if(id == exit->getID())
+			Settings::terminate();
+		else
+			std::cerr << "Something went terribly wrong: You!" << std::endl;
+
+		if(event.type == sf::Event::KeyReleased)
+			if(event.key.code == sf::Keyboard::P)
+				Settings::pause();
+	}
 }
 
 std::string MainMenu::getTitle(void) {
-	return gen.get();
+	return gen.describe();
 }
 
 MainMenu* MainMenu::generate(void) {
