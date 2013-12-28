@@ -18,16 +18,19 @@
 #include "Timer.hpp"
 #include "SentenceGenerator.hpp"
 #include "TextField.hpp"
+#include "ColorPalette.hpp"
+#include "RadioSet.hpp"
 
 class CustomMenu : public Menu {
 	private:
 		sf::Text name;
-		sf::Text gender;
 		sf::Text age;
 
 		TextField* name_f;
-		TextField* gender_f;
 		TextField* age_f;
+
+		RadioSet* gender;
+		ColorPalette* palette;
 
 		Button* save;
 		Button* load;
@@ -50,40 +53,36 @@ std::ostringstream CustomMenu::conv;
 
 CustomMenu::CustomMenu(void) : Menu("Kust O' Mee Zay Shun"),
 		name("Name: ", Settings::DEF_TEXT_FONT, 40),
-		gender("Gender: ", Settings::DEF_TEXT_FONT, 40),
 		age("Age: ", Settings::DEF_TEXT_FONT, 40),
 		name_f(new TextField(
-				SentenceGenerator::getWord(SentenceGenerator::Noun))),
-		gender_f(new TextField(
 				SentenceGenerator::getWord(SentenceGenerator::Noun))),
 		age_f(new TextField(
 				static_cast<std::ostringstream*>(&(conv <<
 				Utility::Random::getUnsignedRandom()%1001))->str())),
+		gender(new RadioSet({"Male", "Female", "Other"},
+				Settings::Width/2, Settings::Height/5 +
+				name.getGlobalBounds().height + 20, "Gender:")),
+		palette(new ColorPalette(50, Settings::Height/5)),
 		save(new Button(
-				Settings::Width/8,	7*Settings::Height/10, "Save")),
+				Settings::Width/8,	8*Settings::Height/10, "Save")),
 		load(new Button(
-				7*Settings::Width/8, 7*Settings::Height/10, "Load")),
+				7*Settings::Width/8, 8*Settings::Height/10, "Load")),
 		random(new Button(
-				Settings::Width/2, 7*Settings::Height/10, "Randomize!")),
+				Settings::Width/2, 8*Settings::Height/10, "Randomize!")),
 		back(new Button(
-				Settings::Width/2, 8*Settings::Height/10, "Back")) {
+				Settings::Width/2, 9*Settings::Height/10, "Back")) {
 
 	conv.str("");
 
 	name.setPosition(Settings::Width/2, Settings::Height/5);
-	gender.setPosition(Settings::Width/2,
-			name.getPosition().y+name.getGlobalBounds().height+50);
 	age.setPosition(Settings::Width/2,
-			gender.getPosition().y+gender.getGlobalBounds().height+50);
+			gender->getPosition().y+gender->getSize().y+100);
 
 	name.setColor(name_f->getUnfocusColor());
-	gender.setColor(gender_f->getUnfocusColor());
 	age.setColor(age_f->getUnfocusColor());
 
 	name_f->setPosition(double(name.getPosition().x +
 			name.getGlobalBounds().width), name.getPosition().y);
-	gender_f->setPosition(double(name.getPosition().x +
-			gender.getGlobalBounds().width), gender.getPosition().y);
 	age_f->setPosition(double(age.getPosition().x +
 			age.getGlobalBounds().width), age.getPosition().y);
 
@@ -93,8 +92,10 @@ CustomMenu::CustomMenu(void) : Menu("Kust O' Mee Zay Shun"),
 	add(back);
 
 	add(name_f);
-	add(gender_f);
 	add(age_f);
+
+	add(gender);
+	add(palette);
 }
 
 CustomMenu::~CustomMenu(void) {}
@@ -109,7 +110,6 @@ void CustomMenu::draw(sf::RenderTarget& target, sf::RenderStates state) const {
 	Menu::draw(target, state);
 
 	target.draw(name, state);
-	target.draw(gender, state);
 	target.draw(age, state);
 }
 
@@ -127,7 +127,6 @@ void CustomMenu::onEvent(const sf::Event& event) {
 			conv << (Utility::Random::getUnsignedRandom()%1001);
 
 			name_f->setText(SentenceGenerator::getWord(SentenceGenerator::Noun));
-			gender_f->setText(SentenceGenerator::getWord(SentenceGenerator::Noun));
 			age_f->setText(conv.str());
 
 			conv.str("");
@@ -137,8 +136,6 @@ void CustomMenu::onEvent(const sf::Event& event) {
 			name.setColor(name_f->getColor());
 		else if(id == age_f->getID())
 			age.setColor(age_f->getColor());
-		else if(id == gender_f->getID())
-			gender.setColor(gender_f->getColor());
 		else
 			std::cerr << "Auto-destruction sequence activated. Nooooo!!!" << std::endl;
 	}

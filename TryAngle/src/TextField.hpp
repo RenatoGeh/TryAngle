@@ -51,7 +51,8 @@ TextField::TextField(const std::string& text = "",
 		Component(x, y, 0, 0),
 		str(text, font, size),
 		width(_width), focus(false),
-		focus_c(0, 0, 0), unfocus_c(50, 50, 50) {
+		focus_c(Component::DEF_FOCUS_COLOR),
+		unfocus_c(Component::DEF_UNFOCUS_COLOR) {
 	str.setString(format(text));
 
 	setPosition(x, y);

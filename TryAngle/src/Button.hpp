@@ -59,7 +59,7 @@ Button::Button(double x, double y, std::string title) :
 	invColor = new sf::Color;
 
 	*color = Utility::Random::getRandomColor();
-	*invColor = Utility::Random::getInverseColor(*color);
+	*invColor = Utility::Color::getInverseColor(*color);
 
 	label.setColor(*invColor);
 	label.setFont(Settings::DEF_FONT);

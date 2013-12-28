@@ -32,10 +32,16 @@ class Vector2D : public sf::Vector2<float> {
 		inline Vector2D* mult(Vector2D*);
 		inline Vector2D* div(Vector2D*);
 	public:
+		inline Vector2D& add(const Vector2D&);
+		inline Vector2D& sub(const Vector2D&);
+		inline Vector2D& mult(const Vector2D&);
+		inline Vector2D& div(const Vector2D&);
+	public:
 		inline float distSq(Vector2D*);
 		inline float distSq(float, float);
 		inline float dist(Vector2D*);
 		inline float dist(float, float);
+		template <typename T> inline float distSq(const Vector2<T>&);
 	public:
 		inline bool null(void) const;
 	public:
@@ -118,6 +124,30 @@ inline Vector2D* Vector2D::div(Vector2D* v) {
 	return this;
 }
 
+inline Vector2D& Vector2D::add(const Vector2D& v) {
+	x += v.x;
+	y += v.y;
+	return *this;
+}
+
+inline Vector2D& Vector2D::sub(const Vector2D& v) {
+	x -= v.x;
+	y -= v.y;
+	return *this;
+}
+
+inline Vector2D& Vector2D::mult(const Vector2D& v) {
+	x *= v.x;
+	y *= v.y;
+	return *this;
+}
+
+inline Vector2D& Vector2D::div(const Vector2D& v) {
+	x /= v.x;
+	y /= v.y;
+	return *this;
+}
+
 inline float Vector2D::distSq(Vector2D* v) {
 	float dx = v->x - this->x;
 	float dy = v->y - this->y;
@@ -127,6 +157,12 @@ inline float Vector2D::distSq(Vector2D* v) {
 inline float Vector2D::distSq(float x, float y) {
 	float dx = x - this->x;
 	float dy = y - this->y;
+	return dx*dx + dy*dy;
+}
+
+template <typename T> inline float Vector2D::distSq(const sf::Vector2<T>& v) {
+	float dx = v.x-x;
+	float dy = v.y-y;
 	return dx*dx + dy*dy;
 }
 

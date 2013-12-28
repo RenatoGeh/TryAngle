@@ -16,7 +16,7 @@
 class Component : public sf::Drawable {
 	private:
 		static math::u_id global_ids;
-		static math::u_id recursive_id(unsigned long int);
+		static math::u_id recursive_id(math::u_id);
 		static math::u_id nextID(void);
 	private:
 		math::u_id id;
@@ -36,15 +36,21 @@ class Component : public sf::Drawable {
 	public:
 		virtual bool onEvent(const sf::Event&) = 0;
 		virtual void update(const sf::Time&) = 0;
+	protected:
+		static const sf::Color DEF_UNFOCUS_COLOR;
+		static const sf::Color DEF_FOCUS_COLOR;
 };
 
-unsigned long int Component::global_ids = 0;
+math::u_id Component::global_ids = 0;
+
+const sf::Color Component::DEF_UNFOCUS_COLOR(50, 50, 50);
+const sf::Color Component::DEF_FOCUS_COLOR(0, 0, 0);
 
 Component::Component(double x, double y, double w, double h) :
-		id(Component::nextID()), pos(x, y), size(w, h) {};
+		id(math::u_id(this)), pos(x, y), size(w, h) {};
 
 Component::~Component(void) {
-	Component::global_ids -= math::pow(2ul, this->id);
+	Component::global_ids -= math::pow(2ul, (unsigned long int)id);
 }
 
 Vector2D Component::getPosition(void) const {return pos;}
@@ -62,7 +68,7 @@ math::u_id Component::recursive_id(math::u_id global) {
 
 math::u_id Component::nextID(void) {
 	math::u_id id = Component::recursive_id(Component::global_ids);
-	Component::global_ids += math::pow(2ul, id);
+	Component::global_ids += math::pow(math::u_id(2), (math::u_id)id);
 	return id;
 }
 

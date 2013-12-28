@@ -11,13 +11,16 @@
 #include <random>
 #include <iostream>
 #include <ctime>
+
+#include <SFML/System.hpp>
+
 #include "Gambs.hpp"
 #include "Timer.hpp"
 
 namespace math {
 	typedef char byte;
 	typedef unsigned char u_byte;
-	typedef unsigned long int u_id;
+	typedef sf::Uint64 u_id;
 
 	const long double PI = 3.14159265358979323846;
 	template <typename T> short int signum(T e) {return e>0?1:e<0?-1:0;}
@@ -57,13 +60,6 @@ namespace Utility {
 			return sf::Color(gen()%256, gen()%256, gen()%256);
 		}
 
-		sf::Color getInverseColor(const sf::Color& orig) {
-			return sf::Color(
-					(255-orig.r)%256,
-					(255-orig.b)%256,
-					(255-orig.g)%256);
-		}
-
 		unsigned long int getUnsignedRandom(unsigned long int min=0,
 				unsigned long int max=gen.max()) {
 			return min + (gen() % (max-min));
@@ -86,6 +82,8 @@ namespace Utility {
 	}
 
 	namespace Color {
+		const sf::Color TRANSPARENT(0, 0, 0, 0);
+
 		class Pattern {
 			private:
 				sf::Color* palette;
@@ -138,6 +136,13 @@ namespace Utility {
 			palette->b += double(sign_b)*scale;
 
 			return *palette;
+		}
+
+		sf::Color getInverseColor(const sf::Color& orig) {
+			return sf::Color(
+				(255-orig.r)%256,
+				(255-orig.b)%256,
+				(255-orig.g)%256);
 		}
 	}
 
