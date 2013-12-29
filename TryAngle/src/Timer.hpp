@@ -32,6 +32,11 @@ class Timer {
 		bool autoDeletes(void) const;
 		void setAutoDeletion(bool);
 	public:
+		template <typename T> void setTempo(sf::Time(*)(T), T);
+		float getTempo(void) const;
+	public:
+		void reset(void);
+	public:
 		static void add(Timer*);
 		static void remove(Timer*);
 		static void clear(void);
@@ -64,6 +69,14 @@ void Timer::setActive(bool active) {this->active = active;}
 
 bool Timer::autoDeletes(void) const {return this->auto_deletion;}
 void Timer::setAutoDeletion(bool deletes) {auto_deletion = deletes;}
+
+template <typename T> void Timer::setTempo(sf::Time(*format)(T), T tempo) {
+	dt = format(tempo);
+}
+
+float Timer::getTempo(void) const {return dt.asSeconds();}
+
+void Timer::reset(void) {time=sf::seconds(0);}
 
 void Timer::add(Timer* timer) {Timer::timers.push_back(timer);}
 void Timer::remove(Timer* timer) {

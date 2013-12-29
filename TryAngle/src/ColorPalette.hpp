@@ -30,8 +30,8 @@ class ColorPalette : public Component {
 
 		sf::Color color;
 
-		double linear[6];
 		double angular[6];
+		double linear[6];
 	public:
 		ColorPalette(double, double, sf::Color);
 		~ColorPalette(void);
@@ -44,6 +44,9 @@ class ColorPalette : public Component {
 	private:
 		void loadCoefficients(const sf::VertexArray&);
 		void identify(const sf::VertexArray&, double, double);
+		void plot(const sf::VertexArray&);
+	public:
+		void randomize(void);
 	private:
 		static const sf::Color& parse(sf::Color&, std::string&);
 		static const std::string& interpret(const sf::Color&, std::string&);
@@ -60,7 +63,7 @@ ColorPalette::ColorPalette(double x=0, double y=0,
 				rgb(sf::Triangles, 3), bw(sf::Triangles, 3),
 				rgb_c(3, 4), bw_c(3, 4),
 				selected(10, 4), label("", Settings::DEF_TEXT_FONT),
-				color(def_color), linear(), angular() {
+				color(def_color), angular(), linear() {
 
 	rgb_c.setFillColor(sf::Color(0, 0, 0, 0));
 	rgb_c.setOutlineColor(Utility::Color::getInverseColor(color));
@@ -125,15 +128,15 @@ void ColorPalette::update(const sf::Time& dt) {
 		double x = Settings::mouse_position.x;
 		double y = Settings::mouse_position.y;
 
-		if((linear[0]*x+angular[0]-y)<=0 &&
-			(linear[1]*x+angular[1]-y)>=0 &&
-			(linear[2]*x+angular[2]-y)<=0) {
+		if((angular[0]*x+linear[0]-y)<=0 &&
+			(angular[1]*x+linear[1]-y)>=0 &&
+			(angular[2]*x+linear[2]-y)<=0) {
 			rgb_c.setPosition(x, y);
 			identify(rgb, x, y);
 			refresh();
-		} else if((linear[3]*x+angular[3]-y)<=0 &&
-			(linear[4]*x+angular[4]-y)>=0 &&
-			(linear[5]*x+angular[5]-y)>=0) {
+		} else if((angular[3]*x+linear[3]-y)<=0 &&
+			(angular[4]*x+linear[4]-y)>=0 &&
+			(angular[5]*x+linear[5]-y)>=0) {
 			bw_c.setPosition(x, y);
 		}
 	}
@@ -165,8 +168,8 @@ void ColorPalette::identify(const sf::VertexArray& canvas,
 		double a = (y1-y)/(x1-x);
 		double b = y1-x1*((y1-y)/(x1-x));
 
-		double c = linear[(i+1)%3];
-		double d = angular[(i+1)%3];
+		double c = angular[(i+1)%3];
+		double d = linear[(i+1)%3];
 
 		double x2 = (d-b)/(a-c);
 		double y2 = a*x2+b;
@@ -176,6 +179,28 @@ void ColorPalette::identify(const sf::VertexArray& canvas,
 
 		*comps[i] = 255-(255*AP/(AP+PQ));
 	}
+}
+
+void ColorPalette::plot(const sf::VertexArray& shape) {
+	double l = ColorPalette::dist(shape[0].position.x, shape[0].position.y,
+			shape[1].position.x, shape[1].position.y);
+
+	double da = l*(color.r)/255;
+	double db = l*(color.g)/255;
+
+	double x = (linear[1]-linear[2]+da-db)/(angular[2]-angular[1]);
+	double y = angular[1]*x+linear[1]+da;
+
+	rgb_c.setPosition(x, y);
+}
+
+void ColorPalette::randomize(void) {
+	color.r = Utility::Random::getUnsignedRandom(0, 256);
+	color.g = Utility::Random::getUnsignedRandom(0, 256);
+	color.b = Utility::Random::getUnsignedRandom(0, 256);
+
+	plot(rgb);
+	refresh();
 }
 
 void ColorPalette::refresh(void) {
@@ -256,8 +281,8 @@ void ColorPalette::loadCoefficients(const sf::VertexArray& shape) {
 		double x2 = shape[i%3].position.x;
 		double y2 = shape[i%3].position.y;
 
-		linear[n+i-1] = (y1-y2)/(x1-x2);
-		angular[n+i-1] = y1-x1*((y1-y2)/(x1-x2));
+		angular[n+i-1] = (y1-y2)/(x1-x2);
+		linear[n+i-1] = y1-x1*((y1-y2)/(x1-x2));
 	}
 }
 

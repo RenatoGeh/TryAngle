@@ -55,12 +55,13 @@ CustomMenu::CustomMenu(void) : Menu("Kust O' Mee Zay Shun"),
 		name("Name: ", Settings::DEF_TEXT_FONT, 40),
 		age("Age: ", Settings::DEF_TEXT_FONT, 40),
 		name_f(new TextField(
+				SentenceGenerator::getWord(SentenceGenerator::Noun) +
 				SentenceGenerator::getWord(SentenceGenerator::Noun))),
 		age_f(new TextField(
 				static_cast<std::ostringstream*>(&(conv <<
 				Utility::Random::getUnsignedRandom()%1001))->str())),
 		gender(new RadioSet({"Male", "Female", "Other"},
-				Settings::Width/2, Settings::Height/5 +
+				Settings::Width/3, Settings::Height/5 +
 				name.getGlobalBounds().height + 20, "Gender:")),
 		palette(new ColorPalette(50, Settings::Height/5)),
 		save(new Button(
@@ -74,8 +75,8 @@ CustomMenu::CustomMenu(void) : Menu("Kust O' Mee Zay Shun"),
 
 	conv.str("");
 
-	name.setPosition(Settings::Width/2, Settings::Height/5);
-	age.setPosition(Settings::Width/2,
+	name.setPosition(Settings::Width/3, Settings::Height/5);
+	age.setPosition(Settings::Width/3,
 			gender->getPosition().y+gender->getSize().y+100);
 
 	name.setColor(name_f->getUnfocusColor());
@@ -126,8 +127,12 @@ void CustomMenu::onEvent(const sf::Event& event) {
 		} else if(id == random->getID()) {
 			conv << (Utility::Random::getUnsignedRandom()%1001);
 
-			name_f->setText(SentenceGenerator::getWord(SentenceGenerator::Noun));
+			name_f->setText(SentenceGenerator::getWord(SentenceGenerator::Noun) +
+					SentenceGenerator::getWord(SentenceGenerator::Noun));
 			age_f->setText(conv.str());
+
+			gender->randomize();
+			//palette->randomize();
 
 			conv.str("");
 		} else if(id == back->getID())

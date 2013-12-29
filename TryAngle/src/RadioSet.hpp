@@ -134,6 +134,8 @@ class RadioSet : public Component {
 		virtual void setPosition(double x, double y);
 		void add(const std::string&);
 		std::string getSelected(void) const;
+		const std::vector<RadioButton>& getOptions(void) const;
+		void randomize(void);
 	public:
 		bool onEvent(const sf::Event&);
 		void update(const sf::Time&);
@@ -215,6 +217,21 @@ void RadioSet::add(const std::string& label) {
 	_pos.add(&pos);
 
 	buttons.push_back(RadioButton(label, _pos.x, _pos.y));
+}
+
+const std::vector<RadioButton>& RadioSet::getOptions(void) const {
+	return buttons;
+}
+
+void RadioSet::randomize(void) {
+	int n = Utility::Random::getUnsignedRandom(0, buttons.size());
+
+	for(auto it=buttons.begin();it!=buttons.end();++it,--n) {
+		if(n==0)
+			(*it).select();
+		else
+			(*it).selected = false;
+	}
 }
 
 bool RadioSet::onEvent(const sf::Event& event) {

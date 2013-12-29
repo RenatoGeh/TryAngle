@@ -23,14 +23,22 @@ class Skill {
 	public:
 		std::string name;
 		Skill::Type id;
+		bool isAvailable;
+		ActionTimer<void(void)> cooldown;
 	public:
-		Skill(const std::string&, Skill::Type);
+		Skill(const std::string&, Skill::Type, float);
 		virtual ~Skill(void);
 	public:
-		const std::string getName(void) const;
-		const Skill::Type getType(void) const;
+		void setCooldown(float);
+		float getCooldown(void) const;
+	public:
+		const std::string& getName(void) const;
+		const Skill::Type& getType(void) const;
 	public:
 		virtual void onTrigger(void) = 0;
+	public:
+		virtual void triggerCooldown(void);
+		virtual bool available(void) const;
 
 	/* Declares "static" inner classes */
 	public:
@@ -66,11 +74,28 @@ class Skill::Timed : public Skill {
 		virtual void onTrigger(void);
 };
 
-Skill::Skill(const std::string& name_, Type id_) : name(name_), id(id_) {}
+Skill::Skill(const std::string& name_, Type id_, float tempo=3) :
+		name(name_), id(id_), isAvailable(true),
+		cooldown(sf::seconds, tempo, false, float(0), [&](){
+	std::cout << "Cooled!" << std::endl;
+	isAvailable = true;
+	cooldown.reset();
+}, false, false) {}
 Skill::~Skill(void) {}
 
-const std::string Skill::getName(void) const {return name;}
-const Skill::Type Skill::getType(void) const {return id;}
+void Skill::setCooldown(float tempo) {cooldown.setTempo(sf::seconds, tempo);}
+float Skill::getCooldown(void) const {return cooldown.getTempo();}
+
+const std::string& Skill::getName(void) const {return name;}
+const Skill::Type& Skill::getType(void) const {return id;}
+
+void Skill::triggerCooldown(void) {
+	isAvailable = false;
+	cooldown.setActive(true);
+	Timer::add(&cooldown);
+}
+
+bool Skill::available(void) const {return isAvailable;}
 
 Skill::Passive::Passive(const std::string& name_) :
 		Skill(name_, Type::Pass) {}

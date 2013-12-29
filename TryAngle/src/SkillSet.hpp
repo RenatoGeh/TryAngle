@@ -143,8 +143,13 @@ void SkillSet::onEvent(const sf::Event& event) {
 				event.key.code <= sf::Keyboard::F15) {
 			int code = event.key.code - sf::Keyboard::F1;
 
-			if(hotkeys[code] != nullptr)
-				hotkeys[code]->getCore()->onTrigger();
+			if(hotkeys[code] != nullptr) {
+				Skill* core = hotkeys[code]->getCore();
+				if(core->available()) {
+					core->onTrigger();
+					core->triggerCooldown();
+				}
+			}
 		}
 	}
 }

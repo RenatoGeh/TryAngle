@@ -32,7 +32,6 @@ class GameFrame {
 
 		bool debug_mode;
 		bool paused;
-		bool in_game;
 
 		float scale;
 	private:
@@ -70,7 +69,7 @@ class GameFrame {
 std::ostringstream GameFrame::convert_stream;
 
 GameFrame::GameFrame(std::string title, unsigned short int width, unsigned short int height) :
-	title("A Window With Style."), debug_mode(false), paused(false), in_game(false),
+	title("A Window With Style."), debug_mode(false), paused(false),
 	scale(1) {
 	this->title = title;
 	this->window = new sf::RenderWindow(sf::VideoMode(width, height),
@@ -150,7 +149,7 @@ void GameFrame::onEvent() {
 			Settings::mouse_position.set(
 					event.mouseMove.x, event.mouseMove.y);
 
-		if(!in_game) continue;
+		if(!Settings::in_game) continue;
 
 		if(event.type == sf::Event::MouseButtonReleased) {
 			if(event.mouseButton.button == sf::Mouse::Middle)
@@ -203,7 +202,7 @@ void GameFrame::onUpdate(const sf::Time& dt) {
 
 	Timer::onUpdate(dt);
 
-	if(paused || !in_game) return;
+	if(paused || !Settings::in_game) return;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) scale+=0.01;
 	else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) scale-=0.01;
